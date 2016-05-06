@@ -11,19 +11,30 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
+            var devFolder = Environment.CurrentDirectory;
 
+            if (!File.Exists(args[0]))
+            {
+                Console.WriteLine("Please drop or supply a file");
+                return;
+            }
 
-            var projectsFilePaths = Directory.GetFiles(@"C:\Dev\Current", "*.csproj", SearchOption.AllDirectories);
-            var solutionFilePaths = Directory.GetFiles(@"C:\Dev\Current", "*.sln", SearchOption.AllDirectories);
+            var selectedProject = BuildProjectFromFile(args[0]);
+            var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
+            var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
 
             //get all projects from parent folder
             //build dependency graph
             //get all solutions from parent folder
             //assign projects to solutions
 
+            Console.WriteLine("Gathering Projects ({0})", projectsFilePaths.Count());
             var projects = projectsFilePaths.Select(projectPath => BuildProjectFromFile(projectPath)).ToArray();
+
+            Console.WriteLine("Gathering Solutions {0})", solutionFilePaths.Count());
             var solutions = solutionFilePaths.Select(solutionPath => BuildSolutionFromFile(solutionPath, projects)).ToArray();
 
+            Console.WriteLine("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length);
             //build dependency graph, could be done in linq but meh
             foreach (var outerProject in projects)
             {
@@ -38,8 +49,33 @@ namespace ConsoleApplication1
             }
 
             //would be a good idea to save this....
+            //TODO
 
             //based on input file, 
+            var selectedProjectInGraph = projects.First(proj => proj.ProjectId == selectedProject.ProjectId);
+            var dependentSolutions = GetSolutionsForProject(selectedProjectInGraph);
+
+            Console.WriteLine("Dependent Solutions");
+
+            foreach (var solution in dependentSolutions)
+            {
+                Console.WriteLine(solution.FilePath);
+            }
+#if DEBUG
+            Console.ReadLine();
+#endif
+        }
+
+        private static SolutionFile[] GetSolutionsForProject(ProjectFile inputProject)
+        {
+            var solutions = new List<SolutionFile>(inputProject.ReferencedBySolutions);
+
+            foreach (var dependentProject in inputProject.ReferencedByProjects)
+            {
+                solutions.AddRange(GetSolutionsForProject(dependentProject));
+            }
+
+            return solutions.ToArray();
         }
 
         private static ProjectFile BuildProjectFromFile(string filePath)
@@ -47,13 +83,17 @@ namespace ConsoleApplication1
             var inputText = File.ReadAllText(filePath);
 
             int nonIndex = 0;
-            var projectId = Guid.Parse(GetBetween(inputText, @"<ProjectGuid>{", @"}</ProjectGuid>", ref nonIndex));
+            var projectId = Guid.Parse(GetBetween(inputText, @"<ProjectGuid>", @"</ProjectGuid>", ref nonIndex)
+                                        .Replace("{","").Replace("}",""));
+            nonIndex = 0;
+            var assemblyName = GetBetween(inputText, @"<AssemblyName>", @"</AssemblyName>", ref nonIndex);
 
             int index = 0;
             var referenceIds = new List<Guid>();
             while (index < inputText.Length)
             {
                 var projectRefText = GetBetween(inputText, @"<ProjectReference", @"</ProjectReference>", ref index);
+
                 if (projectRefText != null)
                 {
                     //example
@@ -62,7 +102,11 @@ namespace ConsoleApplication1
                     //  <Name>SMT.Utilities.Configuration</Name>
                     //</ProjectReference>
                     int temp = 0;//ugh regretting that ref
-                    referenceIds.Add(Guid.Parse(GetBetween(projectRefText, @"<Project>{", @"}</Project>", ref temp)));
+                    var projectIdText = GetBetween(projectRefText, @"<Project>{", @"}</Project>", ref temp);
+                    if (projectIdText != null)
+                    {
+                        referenceIds.Add(Guid.Parse(projectIdText));
+                    }
                 }
             }
 
@@ -70,6 +114,7 @@ namespace ConsoleApplication1
             {
                 FilePath = filePath,
                 ProjectId = projectId,
+                AssemblyName = assemblyName,
                 ReferencedByProjects = new List<ProjectFile>(),
                 ReferencedBySolutions = new List<SolutionFile>(),
                 ReferencesProjectIds = referenceIds.ToArray(),
@@ -96,6 +141,7 @@ namespace ConsoleApplication1
                     //Parsing this: ("typeGuid") = "NAME", "path", "IDGuid"
                     var idGuidStr = projectString
                                         .Split(',')[2]
+                                        .Split('\"')[1]
                                         .Replace("\"", "")
                                         .Trim();
 
@@ -115,7 +161,7 @@ namespace ConsoleApplication1
         private static string GetBetween(string input, string start, string end, ref int index)
         {
             var firstInstanceOfStart = input.IndexOf(start, index);
-            var firstInstanceOfEnd = input.IndexOf(end, index + start.Length);
+            var firstInstanceOfEnd = input.IndexOf(end, firstInstanceOfStart + end.Length);
 
             if (firstInstanceOfStart > 0 && firstInstanceOfEnd > 0)
             {
@@ -139,6 +185,7 @@ namespace ConsoleApplication1
         private struct ProjectFile
         {
             public string FilePath;
+            public string AssemblyName;
             public Guid[] ReferencesProjectIds; //intermediate step before graph building
             public List<ProjectFile> ReferencesProjects;
             public List<ProjectFile> ReferencedByProjects;
