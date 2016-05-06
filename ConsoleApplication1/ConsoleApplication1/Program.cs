@@ -12,14 +12,18 @@ namespace ConsoleApplication1
 		static void Main(string[] args)
 		{
 			var devFolder = Environment.CurrentDirectory;
-
-			if (!File.Exists(args[0]))
+			string inputAssembly;
+			if (!args.Any() || string.IsNullOrWhiteSpace(args[0]))
 			{
-				Console.WriteLine("Please drop or supply a file");
-				return;
+				Console.WriteLine("Enter assembly name");
+				inputAssembly = Console.ReadLine();
 			}
+			else
+			{
+				inputAssembly = args[0];
+			}
+			
 
-			var selectedProject = BuildProjectFromFile(args[0]);
 			var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
 			var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
 
@@ -30,6 +34,14 @@ namespace ConsoleApplication1
 
 			Console.WriteLine("Gathering Projects ({0})", projectsFilePaths.Count());
 			var projects = projectsFilePaths.Select(projectPath => BuildProjectFromFile(projectPath)).ToArray();
+
+			var selectedProjects = projects.Where(proj => proj.AssemblyName != null && proj.AssemblyName.ToLower() == inputAssembly.ToLower());
+			if (!selectedProjects.Any())
+			{
+				Console.WriteLine("Assembly not found {0}", inputAssembly);
+				Console.ReadLine();
+				return;
+			}
 
 			Console.WriteLine("Gathering Solutions {0})", solutionFilePaths.Count());
 			var solutions = solutionFilePaths.Select(solutionPath => BuildSolutionFromFile(solutionPath, projects)).ToArray();
@@ -51,33 +63,32 @@ namespace ConsoleApplication1
 			//would be a good idea to save this....
 
 			//based on input file, 
-			var selectedProjectInGraph = projects.First(proj => proj.ProjectId == selectedProject.ProjectId);
-			var dependants = GetDependantsForProject(selectedProjectInGraph);
+			var dependants = GetDependantsForProject(selectedProjects.ToArray());
 
-			Console.WriteLine("Dependent Solutions");
+			Console.WriteLine("\r\nDependent Solutions");
 			foreach (var solution in dependants.Item1.Distinct())
 			{
 				Console.WriteLine(solution.FilePath);
 			}
 
-			Console.WriteLine("Depenent Projects");
+			Console.WriteLine("\r\nDepenent Projects");
 			foreach (var project in dependants.Item2.Distinct())
 			{
 				Console.WriteLine(project.AssemblyName);
 			}
-#if DEBUG
+
+			Console.WriteLine("\r\nComplete...");
 			Console.ReadLine();
-#endif
 		}
 
-		private static Tuple<SolutionFile[], ProjectFile[]> GetDependantsForProject(ProjectFile inputProject)
+		private static Tuple<SolutionFile[], ProjectFile[]> GetDependantsForProject(ProjectFile[] inputProjects)
 		{
-			var solutions = new List<SolutionFile>(inputProject.ReferencedBySolutions);
-			var projects = new List<ProjectFile>(inputProject.ReferencedByProjects);
+			var solutions = new List<SolutionFile>(inputProjects.SelectMany(proj => proj.ReferencedBySolutions));
+			var projects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencedByProjects));
 
-			foreach (var dependentProject in inputProject.ReferencedByProjects)
+			foreach (var dependentProject in inputProjects.SelectMany(proj => proj.ReferencedByProjects))
 			{
-				var dependants = GetDependantsForProject(dependentProject);
+				var dependants = GetDependantsForProject(new[] { dependentProject });
 				solutions.AddRange(dependants.Item1);
 				projects.AddRange(dependants.Item2);
 			}
