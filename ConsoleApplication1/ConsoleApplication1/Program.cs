@@ -23,7 +23,6 @@ namespace ConsoleApplication1
 				inputAssembly = args[0];
 			}
 			
-
 			var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
 			var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
 
@@ -64,15 +63,32 @@ namespace ConsoleApplication1
 
 			//based on input file, 
 			var dependants = GetDependantsForProject(selectedProjects.ToArray());
+			var dependencies = GetProjectDependencies(selectedProjects.ToArray());
 
-			Console.WriteLine("\r\nDependent Solutions");
+			Console.WriteLine(
+@"
+===================
+Dependent Solutions
+===================");
 			foreach (var solution in dependants.Item1.Distinct())
 			{
 				Console.WriteLine(solution.FilePath);
 			}
 
-			Console.WriteLine("\r\nDepenent Projects");
+			Console.WriteLine(@"
+==================
+Dependent Projects
+==================");
 			foreach (var project in dependants.Item2.Distinct())
+			{
+				Console.WriteLine(project.AssemblyName);
+			}
+
+			Console.WriteLine(@"
+================
+Project Requires
+================");
+			foreach (var project in dependencies.Distinct())
 			{
 				Console.WriteLine(project.AssemblyName);
 			}
@@ -94,6 +110,19 @@ namespace ConsoleApplication1
 			}
 
 			return new Tuple<SolutionFile[], ProjectFile[]>(solutions.ToArray(), projects.ToArray());
+		}
+
+		private static ProjectFile[] GetProjectDependencies(ProjectFile[] inputProjects)
+		{
+			var projects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencesProjects));
+
+			foreach (var reference in inputProjects.SelectMany(proj => proj.ReferencesProjects))
+			{
+				var references = GetProjectDependencies(new[] { reference });
+				projects.AddRange(references);
+			}
+
+			return projects.ToArray();
 		}
 
 		private static ProjectFile BuildProjectFromFile(string filePath)
