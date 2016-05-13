@@ -9,24 +9,25 @@ namespace ConsoleApplication1
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static void Main()
 		{
 			var devFolder = Environment.CurrentDirectory;
 			string inputAssembly;
 			bool verbose = false;
-			if (!args.Any() || string.IsNullOrWhiteSpace(args[0]))
-			{
-				Console.WriteLine("Enter assembly name");
-				var input = Console.ReadLine();
-				inputAssembly = input.Split(' ')[0];
-				verbose = input.Contains("-v");
-			}
-			else
-			{
-				inputAssembly = args[0];
-				verbose = args.Contains("-v");
-			}
-			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
 			var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
 
@@ -38,13 +39,7 @@ namespace ConsoleApplication1
 			Console.WriteLine("Gathering Projects ({0})", projectsFilePaths.Count());
 			var projects = projectsFilePaths.Select(projectPath => BuildProjectFromFile(projectPath)).ToArray();
 
-			var selectedProjects = projects.Where(proj => proj.AssemblyName != null && proj.AssemblyName.ToLower() == inputAssembly.ToLower());
-			if (!selectedProjects.Any())
-			{
-				Console.WriteLine("Assembly not found {0}", inputAssembly);
-				Console.ReadLine();
-				return;
-			}
+			
 
 			Console.WriteLine("Gathering Solutions {0})", solutionFilePaths.Count());
 			var solutions = solutionFilePaths.Select(solutionPath => BuildSolutionFromFile(solutionPath, projects)).ToArray();
@@ -64,44 +59,64 @@ namespace ConsoleApplication1
 			}
 
 			//would be a good idea to save this....
+			string consoleInput = string.Empty;
 
-			//based on input file, 
-			var dependants = GetDependantsForProject(selectedProjects.ToArray());
-			var dependencies = GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
+			do
+			{
+				Console.WriteLine("Enter assembly name");
+				consoleInput = Console.ReadLine();
+				Console.Clear();
+				inputAssembly = consoleInput.Split(' ')[0];
+				verbose = consoleInput.Contains("-v");
+				Console.WriteLine("Finding Assemble {0}", inputAssembly);
 
-			Console.WriteLine(
-@"
+				var selectedProjects = projects.Where(proj => proj.AssemblyName != null && proj.AssemblyName.ToLower() == inputAssembly.ToLower());
+				if (!selectedProjects.Any())
+				{
+					Console.WriteLine("Assembly not found {0}", inputAssembly);
+				}
+				else
+				{
+
+					//based on input file, 
+					var dependants = GetDependantsForProject(selectedProjects.ToArray());
+					var dependencies = GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
+
+					Console.WriteLine(
+		@"
 ===================
 Dependent Solutions
 ===================");
-			int index = 1;
-			foreach (var solution in dependants.Item1.Distinct())
-			{
-				Console.WriteLine("{0} - {1}", index++, solution.FilePath);
-			}
+					int index = 1;
+					foreach (var solution in dependants.Item1.Distinct())
+					{
+						Console.WriteLine("{0} - {1}", index++, solution.FilePath);
+					}
 
-			Console.WriteLine(@"
+					Console.WriteLine(@"
 ==================
 Dependent Projects
 ==================");
-			index = 1;
-			foreach (var project in dependants.Item2.Distinct())
-			{
-				Console.WriteLine("{0} - {1}", index++, project.AssemblyName);
-			}
+					index = 1;
+					foreach (var project in dependants.Item2.Distinct())
+					{
+						Console.WriteLine("{0} - {1}", index++, project.AssemblyName);
+					}
 
-			Console.WriteLine(@"
+					Console.WriteLine(@"
 ================
 Project Requires
 ================");
-			index = 1;
-			foreach (var project in dependencies.Distinct())
-			{
-				Console.WriteLine("{0} - {1}", index++, project);
-			}
+					index = 1;
+					foreach (var project in dependencies.Distinct())
+					{
+						Console.WriteLine("{0} - {1}", index++, project);
+					}
 
-			Console.WriteLine("\r\nComplete...");
-			Console.ReadLine();
+					Console.WriteLine("\r\nComplete...");
+				}
+			}
+			while (consoleInput != "exit");
 		}
 
 		private static Tuple<SolutionFile[], ProjectFile[]> GetDependantsForProject(ProjectFile[] inputProjects)
@@ -126,13 +141,13 @@ Project Requires
 
 			foreach (var reference in inputProjects.SelectMany(proj => proj.ReferencesProjects))
 			{
-				var treeBase = string.Empty;
+				var treeBase = reference.AssemblyName;
 				if (verbose)
 				{
 					treeBase = treeBaseName + "->" + reference.AssemblyName;
 				}
 				var references = GetProjectDependencies(new[] { reference }, treeBase, verbose);
-				dependencies.Add(treeBaseName + "->" + reference.AssemblyName);
+				dependencies.Add(treeBase);
 				dependencies.AddRange(references);
 			}
 
