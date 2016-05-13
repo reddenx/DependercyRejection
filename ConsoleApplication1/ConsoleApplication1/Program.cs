@@ -88,7 +88,7 @@ namespace ConsoleApplication1
 Dependent Solutions
 ===================");
 					int index = 1;
-					foreach (var solution in dependants.Item1.Distinct())
+					foreach (var solution in dependants.Item1.Distinct().OrderBy(sol => sol.FilePath))
 					{
 						Console.WriteLine("{0} - {1}", index++, solution.FilePath);
 					}
@@ -98,7 +98,7 @@ Dependent Solutions
 Dependent Projects
 ==================");
 					index = 1;
-					foreach (var project in dependants.Item2.Distinct())
+					foreach (var project in dependants.Item2.Distinct().OrderBy(proj => proj.AssemblyName))
 					{
 						Console.WriteLine("{0} - {1}", index++, project.AssemblyName);
 					}
@@ -108,7 +108,7 @@ Dependent Projects
 Project Requires
 ================");
 					index = 1;
-					foreach (var project in dependencies.Distinct())
+					foreach (var project in dependencies.Distinct().OrderBy(proj => proj))
 					{
 						Console.WriteLine("{0} - {1}", index++, project);
 					}
