@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace DependercyRejectionUI
 {
@@ -59,6 +60,15 @@ namespace DependercyRejectionUI
             dialog.InitialDirectory = TextBox_DirectoryInputText.Text;
             dialog.AddExtension = true;
             dialog.DefaultExt = "derp";
+			var result = dialog.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				if (File.Exists(dialog.FileName))
+				{
+					File.Delete(dialog.FileName);
+				}
+				DependencyGraphFactory.SaveToFile(dialog.FileName, this.DependencyGraph);				
+			}
         }
 
         private void Button_LoadFromCache_Click(object sender, EventArgs e)
@@ -74,7 +84,8 @@ namespace DependercyRejectionUI
             {
                 this.DependencyGraph = DependencyGraphFactory.LoadFromFile(dialog.FileName);
                 this.CurrentLoadState = LoadState.Loaded;
-            }
+				PopulateComboBox();
+			}
         }
 
         private void Button_LoadAssemblyInformation_Click(object sender, EventArgs e)
@@ -124,7 +135,9 @@ namespace DependercyRejectionUI
 
         private void PopulateComboBox()
         {
-			var items = DependencyGraph.ProjectFiles.Select(project =>
+			var items = DependencyGraph.ProjectFiles
+				.OrderBy(proj => proj.AssemblyName)
+				.Select(project =>
 			{
 				return new ComboBoxItem()
 				{
