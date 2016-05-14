@@ -152,6 +152,7 @@ namespace DependercyRejectionUI
 
         private void PopulateComboBox()
         {
+			ComboBox_AssemblySelector.Items.Clear();
 			var items = DependencyGraph.ProjectFiles
 				.OrderBy(proj => proj.AssemblyName)
 				.Select(project =>
