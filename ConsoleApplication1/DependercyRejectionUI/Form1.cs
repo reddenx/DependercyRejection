@@ -98,15 +98,21 @@ namespace DependercyRejectionUI
 
         private void PopulateComboBox()
         {
-            ComboBox_AssemblySelector.Items.AddRange(DependencyGraph.ProjectFiles.Select(project =>
-                {
-                    return new ComboBoxItem()
-                    {
-                        Text = project.AssemblyName,
-                        Value = project
-                    };
-                }).ToArray());
-        }
+			var items = DependencyGraph.ProjectFiles.Select(project =>
+			{
+				return new ComboBoxItem()
+				{
+					Text = project.AssemblyName,
+					Value = project
+				};
+			}).ToArray();
+
+			foreach (var item in items.Where(item => item.Text != null))
+			{
+				ComboBox_AssemblySelector.Items.Add(item);
+			}
+
+		}
 
         private void SetAssemblyControls(bool enabled)
         {
