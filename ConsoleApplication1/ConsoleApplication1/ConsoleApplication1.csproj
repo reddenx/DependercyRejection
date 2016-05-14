@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyGraph.cs" />
+    <Compile Include="DependencyGraphFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
