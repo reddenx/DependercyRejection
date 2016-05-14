@@ -102,6 +102,23 @@ namespace DependercyRejectionUI
             var baseNodes = BuildTreeNodes(projectFile);
             TreeView_AssemblyInformationTree.Nodes.Add(baseNodes.Item1);
 
+            var solutionNames = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile })
+                .SolutionFiles.Distinct()
+                .Select(sol => sol.FilePath)
+                .OrderBy(s => s)
+                .ToArray();
+            
+            var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
+            
+
+            solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
+
+            TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
+            
+
+
+
+
             //traverse tree time...
         }
 
@@ -110,7 +127,7 @@ namespace DependercyRejectionUI
             var thisNode = new TreeNode();
 
             int projectCount = file.ReferencesProjects.Count;
-            foreach (var project in file.ReferencesProjects)
+            foreach (var project in file.ReferencesProjects.OrderBy(proj => proj.AssemblyName))
             {
                 var info = BuildTreeNodes(project);
                 thisNode.Nodes.Add(info.Item1);
