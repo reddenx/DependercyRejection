@@ -158,5 +158,21 @@ namespace DependercyRejectionUI
                 return Text;
             }
         }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void howTheShitDoIUseThisThingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+@"Load projects from branch:
+1) enter path in textbox
+2) click load
+3) wait a really long time for monster to populate
+4) Select assembly in question
+5) Watch and be amazed!", "How to use this shit");
+        }
     }
 }
