@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ConsoleApplication1
 {
     [Serializable]
-    class DependencyGraph
+    public class DependencyGraph
     {
         public ProjectFile[] ProjectFiles;
         public SolutionFile[] SolutionFiles;
