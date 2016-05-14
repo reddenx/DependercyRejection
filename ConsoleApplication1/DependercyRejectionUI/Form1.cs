@@ -49,6 +49,32 @@ namespace DependercyRejectionUI
 
             Button_BuildFromDirectory.Click += Button_BuildFromDirectory_Click;
             Button_LoadAssemblyInformation.Click += Button_LoadAssemblyInformation_Click;
+            Button_LoadFromCache.Click += Button_LoadFromCache_Click;
+            Button_SaveToCache.Click += Button_SaveToCache_Click;
+        }
+
+        void Button_SaveToCache_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.InitialDirectory = TextBox_DirectoryInputText.Text;
+            dialog.AddExtension = true;
+            dialog.DefaultExt = "derp";
+        }
+
+        private void Button_LoadFromCache_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.InitialDirectory = TextBox_DirectoryInputText.Text;
+            //Text files (*.txt)|*.txt|All files (*.*)|*.*
+            dialog.Filter = "Derp files (*.derp)|*.derp";
+            dialog.Multiselect = false;
+            var result = dialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                this.DependencyGraph = DependencyGraphFactory.LoadFromFile(dialog.FileName);
+                this.CurrentLoadState = LoadState.Loaded;
+            }
         }
 
         private void Button_LoadAssemblyInformation_Click(object sender, EventArgs e)
