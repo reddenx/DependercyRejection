@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,65 +13,49 @@ namespace ConsoleApplication1
 		static void Main()
 		{
 			var devFolder = Environment.CurrentDirectory;
-			string inputAssembly;
+            var saveFileName = "DependercyRejection.derp";
+            string inputAssembly;
 			bool verbose = false;
 
+            DependencyGraph dependencies = null;
+
+            //load saved if exists
+            if (File.Exists(saveFileName))
+            {
+                Console.WriteLine("Loading From Cache");
+                dependencies = LoadFromFile(saveFileName);
+            }
+
+            //if save didn't populate
+            if (dependencies == null)
+            {
+                dependencies = BuildFromDisk(devFolder);
+                SaveToFile(saveFileName, dependencies);
+            }
 
 
-
-
-
-
-
-
-
-
-
-
-
-			var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
-			var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
-
-			//get all projects from parent folder
-			//build dependency graph
-			//get all solutions from parent folder
-			//assign projects to solutions
-
-			Console.WriteLine("Gathering Projects ({0})", projectsFilePaths.Count());
-			var projects = projectsFilePaths.Select(projectPath => BuildProjectFromFile(projectPath)).ToArray();
-
-			
-
-			Console.WriteLine("Gathering Solutions {0})", solutionFilePaths.Count());
-			var solutions = solutionFilePaths.Select(solutionPath => BuildSolutionFromFile(solutionPath, projects)).ToArray();
-
-			Console.WriteLine("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length);
-			//build dependency graph, could be done in linq but meh
-			foreach (var outerProject in projects)
-			{
-				foreach (var innerProject in projects)
-				{
-					if (outerProject.ReferencesProjectIds.Contains(innerProject.ProjectId))
-					{
-						outerProject.ReferencesProjects.Add(innerProject);
-						innerProject.ReferencedByProjects.Add(outerProject);
-					}
-				}
-			}
 
 			//would be a good idea to save this....
 			string consoleInput = string.Empty;
 
 			do
 			{
-				Console.WriteLine("Enter assembly name");
+				Console.WriteLine("Enter Assembly name");
 				consoleInput = Console.ReadLine();
 				Console.Clear();
 				inputAssembly = consoleInput.Split(' ')[0];
 				verbose = consoleInput.Contains("-v");
-				Console.WriteLine("Finding Assemble {0}", inputAssembly);
 
-				var selectedProjects = projects.Where(proj => proj.AssemblyName != null && proj.AssemblyName.ToLower() == inputAssembly.ToLower());
+                if (consoleInput.Contains("--refresh"))
+                {
+                    //refresh here
+                    BuildFromDisk(devFolder);
+                    continue;
+                }
+
+				Console.WriteLine("Finding Assembly {0}", inputAssembly);
+
+                var selectedProjects = dependencies.ProjectFiles.Where(proj => proj.AssemblyName != null && proj.AssemblyName.ToLower() == inputAssembly.ToLower());
 				if (!selectedProjects.Any())
 				{
 					Console.WriteLine("Assembly not found {0}", inputAssembly);
@@ -79,8 +64,8 @@ namespace ConsoleApplication1
 				{
 
 					//based on input file, 
-					var dependants = GetDependantsForProject(selectedProjects.ToArray());
-					var dependencies = GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
+					var upTheGraph = GetDependantsForProject(selectedProjects.ToArray());
+					var downTheGraph = GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
 
 					Console.WriteLine(
 		@"
@@ -88,7 +73,7 @@ namespace ConsoleApplication1
 Dependent Solutions
 ===================");
 					int index = 1;
-					foreach (var solution in dependants.Item1.Distinct().OrderBy(sol => sol.FilePath))
+					foreach (var solution in upTheGraph.Item1.Distinct().OrderBy(sol => sol.FilePath))
 					{
 						Console.WriteLine("{0} - {1}", index++, solution.FilePath);
 					}
@@ -98,7 +83,7 @@ Dependent Solutions
 Dependent Projects
 ==================");
 					index = 1;
-					foreach (var project in dependants.Item2.Distinct().OrderBy(proj => proj.AssemblyName))
+					foreach (var project in upTheGraph.Item2.Distinct().OrderBy(proj => proj.AssemblyName))
 					{
 						Console.WriteLine("{0} - {1}", index++, project.AssemblyName);
 					}
@@ -108,7 +93,7 @@ Dependent Projects
 Project Requires
 ================");
 					index = 1;
-					foreach (var project in dependencies.Distinct().OrderBy(proj => proj))
+                    foreach (var project in downTheGraph.Distinct().OrderBy(proj => proj))
 					{
 						Console.WriteLine("{0} - {1}", index++, project);
 					}
@@ -118,6 +103,73 @@ Project Requires
 			}
 			while (consoleInput != "exit");
 		}
+
+        private static DependencyGraph BuildFromDisk(string devFolder)
+        {
+            Console.WriteLine("Gathering Projects From: {0}", devFolder);
+            var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
+            Console.WriteLine("Found: {0}", projectsFilePaths.Length);
+
+            Console.WriteLine("Gathering Solutions From: {0}", devFolder);
+            var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
+            Console.WriteLine("Found: {0}", solutionFilePaths.Length);
+
+            Console.WriteLine("Constructing Data", projectsFilePaths.Count());
+            var projects = projectsFilePaths.Select(projectPath => ProjectFile.BuildFromFile(projectPath)).ToArray();
+            var solutions = solutionFilePaths.Select(solutionPath => SolutionFile.BuildFromFile(solutionPath, projects)).ToArray();
+
+            Console.WriteLine("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length);
+            //build dependency graph, could be done in linq but meh
+            foreach (var outerProject in projects)
+            {
+                foreach (var innerProject in projects)
+                {
+                    if (outerProject.ReferencesProjectIds.Contains(innerProject.ProjectId))
+                    {
+                        outerProject.ReferencesProjects.Add(innerProject);
+                        innerProject.ReferencedByProjects.Add(outerProject);
+                    }
+                }
+            }
+            return new DependencyGraph(projects, solutions);
+        }
+
+        private static DependencyGraph LoadFromFile(string saveFileName)
+        {
+            var formatter = new BinaryFormatter();
+            try
+            {
+                using (var inStream = File.OpenRead(saveFileName))
+                {
+                    return (DependencyGraph)formatter.Deserialize(inStream);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void SaveToFile(string saveFileName, DependencyGraph dependencies)
+        {
+            Console.WriteLine("Complete, saving to: {0}\r\n --refresh to refresh from disk", saveFileName);
+            try
+            {
+                try { File.Delete(saveFileName); }
+                catch { }
+
+                using (var stream = File.OpenWrite(saveFileName))
+                {
+                    var formatter = new BinaryFormatter();
+                    formatter.Serialize(stream, dependencies);
+                }
+
+            }
+            catch
+            {
+                Console.WriteLine("Unable to save file: {0}", saveFileName);
+            }
+        }
 
 		private static Tuple<SolutionFile[], ProjectFile[]> GetDependantsForProject(ProjectFile[] inputProjects)
 		{
@@ -154,125 +206,5 @@ Project Requires
 			return dependencies.ToArray();
 		}
 
-		private static ProjectFile BuildProjectFromFile(string filePath)
-		{
-			var inputText = File.ReadAllText(filePath);
-
-			int nonIndex = 0;
-			var projectIdString = GetBetween(inputText, @"<ProjectGuid>", @"</ProjectGuid>", ref nonIndex);
-			var projectId = Guid.Empty;
-			if (projectIdString != null)
-			{
-				projectId = Guid.Parse(projectIdString.Replace("{", "").Replace("}", ""));
-			}
-
-
-			nonIndex = 0;
-			var assemblyName = GetBetween(inputText, @"<AssemblyName>", @"</AssemblyName>", ref nonIndex);
-
-			int index = 0;
-			var referenceIds = new List<Guid>();
-			while (index < inputText.Length)
-			{
-				var projectRefText = GetBetween(inputText, @"<ProjectReference", @"</ProjectReference>", ref index);
-
-				if (projectRefText != null)
-				{
-					//example
-					//<ProjectReference Include="..\SMT.Utilities.Configuration\SMT.Utilities.Configuration.csproj">
-					//  <Project>{906aa950-a547-4061-a64a-2a5181b01fed}</Project>
-					//  <Name>SMT.Utilities.Configuration</Name>
-					//</ProjectReference>
-					int temp = 0;//ugh regretting that ref
-					var projectIdText = GetBetween(projectRefText, @"<Project>{", @"}</Project>", ref temp);
-					if (projectIdText != null)
-					{
-						referenceIds.Add(Guid.Parse(projectIdText));
-					}
-				}
-			}
-
-			return new ProjectFile()
-			{
-				FilePath = filePath,
-				ProjectId = projectId,
-				AssemblyName = assemblyName,
-				ReferencedByProjects = new List<ProjectFile>(),
-				ReferencedBySolutions = new List<SolutionFile>(),
-				ReferencesProjectIds = referenceIds.ToArray(),
-				ReferencesProjects = new List<ProjectFile>(),
-			};
-		}
-
-		private static SolutionFile BuildSolutionFromFile(string filePath, ProjectFile[] projectList)
-		{
-			var inputText = File.ReadAllText(filePath);
-
-			var solution = new SolutionFile()
-			{
-				FilePath = filePath,
-				Projects = new List<ProjectFile>()
-			};
-
-			int index = 0; var done = false;
-			while (index < inputText.Length && !done)
-			{
-				var projectString = GetBetween(inputText, "Project", "EndProject", ref index);
-				if (projectString != null)
-				{
-					//Parsing this: ("typeGuid") = "NAME", "path", "IDGuid"
-					var idGuidStr = projectString
-										.Split(',')[2]
-										.Split('\"')[1]
-										.Replace("\"", "")
-										.Trim();
-
-					var projectGuid = Guid.Parse(idGuidStr);
-					var dependentProjects = projectList.Where(proj => proj.ProjectId == projectGuid);
-					solution.Projects.AddRange(dependentProjects);
-					foreach (var project in dependentProjects)
-					{
-						project.ReferencedBySolutions.Add(solution);
-					}
-				}
-			}
-
-			return solution;
-		}
-
-		private static string GetBetween(string input, string start, string end, ref int index)
-		{
-			var firstInstanceOfStart = input.IndexOf(start, index);
-			var firstInstanceOfEnd = input.IndexOf(end, firstInstanceOfStart + end.Length);
-
-			if (firstInstanceOfStart > 0 && firstInstanceOfEnd > 0)
-			{
-				var startCapture = firstInstanceOfStart + start.Length;
-				var capture = input.Substring(startCapture, firstInstanceOfEnd - startCapture);
-				index = firstInstanceOfEnd + end.Length;
-				return capture;
-			}
-
-			index = input.Length;
-			return null;
-		}
-
-
-		private struct SolutionFile
-		{
-			public string FilePath;
-			public List<ProjectFile> Projects; //guid identifier
-		}
-
-		private struct ProjectFile
-		{
-			public string FilePath;
-			public string AssemblyName;
-			public Guid[] ReferencesProjectIds; //intermediate step before graph building
-			public List<ProjectFile> ReferencesProjects;
-			public List<ProjectFile> ReferencedByProjects;
-			public List<SolutionFile> ReferencedBySolutions;
-			public Guid ProjectId; //guid identifier
-		}
 	}
 }
