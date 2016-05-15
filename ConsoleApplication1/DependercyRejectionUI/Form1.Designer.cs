@@ -41,6 +41,8 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howTheShitDoIUseThisThingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
+            this.Button_FilterAssembly = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -90,6 +92,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.Button_FilterAssembly);
+            this.groupBox1.Controls.Add(this.ComboBox_FilterAssembly);
             this.groupBox1.Controls.Add(this.TreeView_AssemblyInformationTree);
             this.groupBox1.Controls.Add(this.Button_LoadAssemblyInformation);
             this.groupBox1.Controls.Add(this.ComboBox_AssemblySelector);
@@ -102,9 +106,9 @@
             // 
             // TreeView_AssemblyInformationTree
             // 
-            this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 46);
+            this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 73);
             this.TreeView_AssemblyInformationTree.Name = "TreeView_AssemblyInformationTree";
-            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 567);
+            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 540);
             this.TreeView_AssemblyInformationTree.TabIndex = 6;
             // 
             // Button_LoadAssemblyInformation
@@ -138,7 +142,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -156,6 +160,24 @@
             this.howTheShitDoIUseThisThingToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.howTheShitDoIUseThisThingToolStripMenuItem.Text = "How the shit do I use this thing?";
             this.howTheShitDoIUseThisThingToolStripMenuItem.Click += new System.EventHandler(this.howTheShitDoIUseThisThingToolStripMenuItem_Click);
+            // 
+            // ComboBox_FilterAssembly
+            // 
+            this.ComboBox_FilterAssembly.FormattingEnabled = true;
+            this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
+            this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
+            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(451, 21);
+            this.ComboBox_FilterAssembly.TabIndex = 7;
+            this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
+            // 
+            // Button_FilterAssembly
+            // 
+            this.Button_FilterAssembly.Location = new System.Drawing.Point(463, 44);
+            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
+            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
+            this.Button_FilterAssembly.TabIndex = 8;
+            this.Button_FilterAssembly.Text = "Filter";
+            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -194,6 +216,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
+        private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
+        private System.Windows.Forms.Button Button_FilterAssembly;
 
 
 
