@@ -118,24 +118,33 @@ namespace DependercyRejectionUI
                 TreeView_AssemblyInformationTree.Nodes.Add(baseNodes.Item1);
             }
 
-            var solutionNames = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile })
-                .SolutionFiles.Distinct()
+			var dependents = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile });
+
+			var solutionNames = dependents
+				.SolutionFiles.Distinct()
                 .Select(sol => sol.FilePath)
                 .OrderBy(s => s)
                 .ToArray();
             
             var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
-            
 
             solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
-
             TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
-        }
 
-        //current
-        //recurse into children to get children
+			var dependentNodes = dependents.ProjectFiles
+				.Distinct()
+				.OrderBy(proj => proj.AssemblyName)
+				.Select(proj => new TreeNode() { Text = proj.AssemblyName }).ToArray();
+			var dependentsNode = new TreeNode() { Text = "Dependers " + dependentNodes.Length};
+			dependentsNode.Nodes.AddRange(dependentNodes);
 
-        private Tuple<TreeNode, int> BuildTreeNodes(ProjectFile file, ProjectFile? filter)
+            TreeView_AssemblyInformationTree.Nodes.Add(dependentsNode);
+		}
+
+		//current
+		//recurse into children to get children
+
+		private Tuple<TreeNode, int> BuildTreeNodes(ProjectFile file, ProjectFile? filter)
         {
             var thisNode = new TreeNode();
 
