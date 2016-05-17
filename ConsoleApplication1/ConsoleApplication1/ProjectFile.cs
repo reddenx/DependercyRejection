@@ -19,7 +19,7 @@ namespace ConsoleApplication1
         public List<SolutionFile> ReferencedBySolutions;
         public Guid ProjectId; //guid identifier
 
-        private ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds)
+        private ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds, string outputType)
         {
             FilePath = filePath;
             ProjectId = projectId;
@@ -28,6 +28,7 @@ namespace ConsoleApplication1
             ReferencedBySolutions = new List<SolutionFile>();
             ReferencesProjectIds = referenceIds.ToArray();
             ReferencesProjects = new List<ProjectFile>();
+            OutputType = outputType;
         }
 
         public static ProjectFile BuildFromFile(string filePath)
@@ -42,7 +43,6 @@ namespace ConsoleApplication1
                 projectId = Guid.Parse(projectIdString.Replace("{", "").Replace("}", ""));
             }
 
-
             nonIndex = 0;
             var assemblyName = inputText.GetBetween(@"<AssemblyName>", @"</AssemblyName>", ref nonIndex);
 
@@ -54,11 +54,6 @@ namespace ConsoleApplication1
 
                 if (projectRefText != null)
                 {
-                    //example
-                    //<ProjectReference Include="..\SMT.Utilities.Configuration\SMT.Utilities.Configuration.csproj">
-                    //  <Project>{906aa950-a547-4061-a64a-2a5181b01fed}</Project>
-                    //  <Name>SMT.Utilities.Configuration</Name>
-                    //</ProjectReference>
                     int temp = 0;//ugh regretting that ref
                     var projectIdText = projectRefText.GetBetween(@"<Project>{", @"}</Project>", ref temp);
                     if (projectIdText != null)
@@ -68,11 +63,15 @@ namespace ConsoleApplication1
                 }
             }
 
+            nonIndex = 0;
+            var outputType = inputText.GetBetween(@"<OutputType>", @"</OutputType>", ref nonIndex);
+
             return new ProjectFile()
             {
                 FilePath = filePath,
                 ProjectId = projectId,
                 AssemblyName = assemblyName,
+                OutputType = outputType,
                 ReferencedByProjects = new List<ProjectFile>(),
                 ReferencedBySolutions = new List<SolutionFile>(),
                 ReferencesProjectIds = referenceIds.ToArray(),

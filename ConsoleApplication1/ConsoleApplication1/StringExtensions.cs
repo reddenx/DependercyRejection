@@ -8,6 +8,9 @@ namespace ConsoleApplication1
 {
     public static class StringExtensions
     {
+        /// <summary>
+        /// reminder to self, takes index used as start point and outputs as ending point
+        /// </summary>
         public static string GetBetween(this string input, string start, string end, ref int index)
         {
             var firstInstanceOfStart = input.IndexOf(start, index);

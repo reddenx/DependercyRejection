@@ -61,7 +61,7 @@ namespace DependercyRejectionUI
 
         private void GraphFactory_OutputLog(object sender, string msg)
         {
-            Label_StatusInformationText.Text = msg;
+            ToolStatusLabel_OutputStatus.Text = msg;
             Update();
         }
 
@@ -187,14 +187,15 @@ namespace DependercyRejectionUI
             var down = TreeNodeBuilder.BuildTreeNodesDown(projectFile, filterProject);
             if (down != null)
             {
-                var node = new TreeNode() { Text = "Dependencies Down " + down.Item1.Nodes.Count };
+                var node = new TreeNode() { Text = "Dependencies Down " + down.Item2 };
+                node.Nodes.Add(down.Item1);
                 TreeView_AssemblyInformationTree.Nodes.Add(node);
             }
 
             var up = TreeNodeBuilder.BuildTreeNodesUp(projectFile, filterProject);
             if (up != null)
             {
-                var node = new TreeNode() { Text = "Dependencies Up " + up.Item1.Nodes.Count };
+                var node = new TreeNode() { Text = "Dependencies Up " + up.Item2 };
                 node.Nodes.Add(up.Item1);
                 TreeView_AssemblyInformationTree.Nodes.Add(node);
             }
@@ -208,16 +209,6 @@ namespace DependercyRejectionUI
             var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
             solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
             TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
-        }
-
-        private void BuildAllEntryTree(ProjectFile[] allProjects)
-        {
-            var masterList = new List<ProjectFile>();
-            foreach (var project in allProjects)
-            {
-                //determine if all projects referencing this one are test projects
-                //"Library"
-            }
         }
 
         private class ComboBoxItem

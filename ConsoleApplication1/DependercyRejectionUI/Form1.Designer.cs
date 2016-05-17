@@ -43,9 +43,11 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howTheShitDoIUseThisThingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.Label_StatusInformationText = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.ToolStatusLabel_OutputStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBox_DirectoryInputText
@@ -100,7 +102,7 @@
             this.groupBox1.Controls.Add(this.ComboBox_AssemblySelector);
             this.groupBox1.Location = new System.Drawing.Point(12, 89);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(544, 619);
+            this.groupBox1.Size = new System.Drawing.Size(544, 650);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lookup Assemblies";
@@ -127,7 +129,7 @@
             // 
             this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 73);
             this.TreeView_AssemblyInformationTree.Name = "TreeView_AssemblyInformationTree";
-            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 540);
+            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 571);
             this.TreeView_AssemblyInformationTree.TabIndex = 6;
             // 
             // Button_LoadAssemblyInformation
@@ -180,20 +182,27 @@
             this.howTheShitDoIUseThisThingToolStripMenuItem.Text = "How the shit do I use this thing?";
             this.howTheShitDoIUseThisThingToolStripMenuItem.Click += new System.EventHandler(this.howTheShitDoIUseThisThingToolStripMenuItem_Click);
             // 
-            // Label_StatusInformationText
+            // statusStrip1
             // 
-            this.Label_StatusInformationText.AutoSize = true;
-            this.Label_StatusInformationText.Location = new System.Drawing.Point(18, 66);
-            this.Label_StatusInformationText.Name = "Label_StatusInformationText";
-            this.Label_StatusInformationText.Size = new System.Drawing.Size(0, 13);
-            this.Label_StatusInformationText.TabIndex = 7;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStatusLabel_OutputStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 742);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(569, 22);
+            this.statusStrip1.TabIndex = 8;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // ToolStatusLabel_OutputStatus
+            // 
+            this.ToolStatusLabel_OutputStatus.Name = "ToolStatusLabel_OutputStatus";
+            this.ToolStatusLabel_OutputStatus.Size = new System.Drawing.Size(0, 17);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(569, 720);
-            this.Controls.Add(this.Label_StatusInformationText);
+            this.ClientSize = new System.Drawing.Size(569, 764);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Button_SaveToCache);
             this.Controls.Add(this.Button_LoadFromCache);
@@ -206,6 +215,8 @@
             this.groupBox1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -228,7 +239,8 @@
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
         private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
         private System.Windows.Forms.Button Button_FilterAssembly;
-        private System.Windows.Forms.Label Label_StatusInformationText;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel ToolStatusLabel_OutputStatus;
 
 
 
