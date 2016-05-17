@@ -112,30 +112,48 @@ namespace DependercyRejectionUI
         private void BuildTreeInfo(ProjectFile projectFile, ProjectFile? filterProject = null)
         {
             TreeView_AssemblyInformationTree.Nodes.Clear();
-            var baseNodes = BuildTreeNodes(projectFile, filterProject);
+            var baseNodes = BuildTreeNodesDown(projectFile, filterProject);
             if (baseNodes != null)
             {
                 TreeView_AssemblyInformationTree.Nodes.Add(baseNodes.Item1);
             }
 
-            var solutionNames = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile })
-                .SolutionFiles.Distinct()
+			var dependents = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile });
+
+			var solutionNames = dependents
+				.SolutionFiles.Distinct()
                 .Select(sol => sol.FilePath)
                 .OrderBy(s => s)
                 .ToArray();
             
             var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
-            
 
             solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
-
             TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
-        }
 
-        //current
-        //recurse into children to get children
+			//var dependentNodes = dependents.ProjectFiles
+			//	.Distinct()
+			//	.OrderBy(proj => proj.AssemblyName)
+			//	.Select(proj => new TreeNode() { Text = proj.AssemblyName }).ToArray();
+			//var dependentsNode = new TreeNode() { Text = "Dependers " + dependentNodes.Length};
+			//dependentsNode.Nodes.AddRange(dependentNodes);
 
-        private Tuple<TreeNode, int> BuildTreeNodes(ProjectFile file, ProjectFile? filter)
+   //         TreeView_AssemblyInformationTree.Nodes.Add(dependentsNode);
+
+
+			var up = BuildTreeNodesUp(projectFile, filterProject);
+			if (up != null)
+			{
+				var node = new TreeNode() { Text = "Dependers" };
+				node.Nodes.Add(up.Item1);
+				TreeView_AssemblyInformationTree.Nodes.Add(node);
+			}
+		}
+
+		//current
+		//recurse into children to get children
+
+		private Tuple<TreeNode, int> BuildTreeNodesDown(ProjectFile file, ProjectFile? filter)
         {
             var thisNode = new TreeNode();
 
@@ -155,7 +173,7 @@ namespace DependercyRejectionUI
             int projectCount = 0;
             foreach (var project in file.ReferencesProjects.OrderBy(proj => proj.AssemblyName))
             {
-                var info = BuildTreeNodes(project, filter);
+                var info = BuildTreeNodesDown(project, filter);
                 if (info != null)
                 {
                     thisNode.Nodes.Add(info.Item1);
@@ -184,7 +202,56 @@ namespace DependercyRejectionUI
             return new Tuple<TreeNode, int>(thisNode, projectCount);
         }
 
-        private void Button_BuildFromDirectory_Click(object sender, EventArgs e)
+		private Tuple<TreeNode, int> BuildTreeNodesUp(ProjectFile file, ProjectFile? filter)
+		{
+			var thisNode = new TreeNode();
+
+			if (filter.HasValue)
+			{
+				if (filter.Value.AssemblyName == file.AssemblyName)
+				{
+					thisNode.Text = file.AssemblyName;
+					return new Tuple<TreeNode, int>(thisNode, 1);
+				}
+				else if (!file.ReferencedByProjects.Any())
+				{
+					return null;
+				}
+			}
+
+			int projectCount = 0;
+			foreach (var project in file.ReferencedByProjects.OrderBy(proj => proj.AssemblyName))
+			{
+				var info = BuildTreeNodesUp(project, filter);
+				if (info != null)
+				{
+					thisNode.Nodes.Add(info.Item1);
+					projectCount += info.Item2;
+				}
+				else
+				{
+					//return null;
+				}
+			}
+
+			if (filter.HasValue)
+			{
+				if (thisNode.Nodes.Count == 0)
+				{
+					return null;
+				}
+			}
+			else
+			{
+				projectCount += thisNode.Nodes.Count;
+			}
+
+			thisNode.Text = (string.Format("{0}: {1}", file.AssemblyName, projectCount));
+
+			return new Tuple<TreeNode, int>(thisNode, projectCount);
+		}
+
+		private void Button_BuildFromDirectory_Click(object sender, EventArgs e)
         {
             DependencyGraph = ConsoleApplication1.DependencyGraphFactory.BuildFromDisk(TextBox_DirectoryInputText.Text);
 
