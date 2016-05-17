@@ -92,7 +92,7 @@ namespace ConsoleApplication1
             return new DependencyGraph(projects.ToArray(), solutions.ToArray());
         }
 
-        public static string[] GetProjectDependencies(ProjectFile[] inputProjects, string treeBaseName, bool verbose)
+		public static string[] GetProjectDependencies(ProjectFile[] inputProjects, string treeBaseName, bool verbose)
         {
             var projects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencesProjects));
             var dependencies = new List<string>();
