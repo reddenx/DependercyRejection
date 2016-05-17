@@ -8,24 +8,27 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1
 {
-    public static class DependencyGraphFactory
+    public class DependencyGraphFactory
     {
-        public static DependencyGraph BuildFromDisk(string devFolder)
+        public event EventHandler<string> OutputLog;
+        private void SafeLogRunner(string entry) { if (OutputLog != null) OutputLog(this, entry); }
+
+        public DependencyGraph BuildFromDisk(string devFolder)
         {
-            Console.WriteLine("Gathering Projects From: {0}", devFolder);
+            SafeLogRunner(string.Format("Gathering Projects From: {0}", devFolder));
             var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
-            Console.WriteLine("Found: {0}", projectsFilePaths.Length);
+            SafeLogRunner(string.Format("Found: {0}", projectsFilePaths.Length));
 
-            Console.WriteLine("Gathering Solutions From: {0}", devFolder);
+            SafeLogRunner(string.Format("Gathering Solutions From: {0}", devFolder));
             var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
-            Console.WriteLine("Found: {0}", solutionFilePaths.Length);
+            SafeLogRunner(string.Format("Found: {0}", solutionFilePaths.Length));
 
-            Console.WriteLine("Constructing Data", projectsFilePaths.Count());
+            SafeLogRunner(string.Format("Constructing Data", projectsFilePaths.Count()));
             var projects = projectsFilePaths.Select(projectPath => ProjectFile.BuildFromFile(projectPath)).ToArray();
             var solutions = solutionFilePaths.Select(solutionPath => SolutionFile.BuildFromFile(solutionPath, projects)).ToArray();
 
-            Console.WriteLine("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length);
-            //build dependency graph, could be done in linq but meh
+            SafeLogRunner(string.Format("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length));
+
             foreach (var outerProject in projects)
             {
                 foreach (var innerProject in projects)
@@ -37,10 +40,11 @@ namespace ConsoleApplication1
                     }
                 }
             }
+            SafeLogRunner("Complete!");
             return new DependencyGraph(projects, solutions);
         }
 
-        public static DependencyGraph LoadFromFile(string saveFileName)
+        public DependencyGraph LoadFromFile(string saveFileName)
         {
             var formatter = new BinaryFormatter();
             try
@@ -56,9 +60,9 @@ namespace ConsoleApplication1
             }
         }
 
-        public static void SaveToFile(string saveFileName, DependencyGraph dependencies)
+        public void SaveToFile(string saveFileName, DependencyGraph dependencies)
         {
-            Console.WriteLine("Complete, saving to: {0}\r\n --refresh to refresh from disk", saveFileName);
+            SafeLogRunner(string.Format("Complete, saving to: {0}\r\n --refresh to refresh from disk", saveFileName));
             try
             {
                 try { File.Delete(saveFileName); }
@@ -73,11 +77,11 @@ namespace ConsoleApplication1
             }
             catch
             {
-                Console.WriteLine("Unable to save file: {0}", saveFileName);
+                SafeLogRunner(string.Format("Unable to save file: {0}", saveFileName));
             }
         }
 
-        public static DependencyGraph GetDependantsForProject(ProjectFile[] inputProjects)
+        public DependencyGraph GetDependantsForProject(ProjectFile[] inputProjects)
         {
             var solutions = new List<SolutionFile>(inputProjects.SelectMany(proj => proj.ReferencedBySolutions));
             var projects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencedByProjects));
@@ -92,7 +96,7 @@ namespace ConsoleApplication1
             return new DependencyGraph(projects.ToArray(), solutions.ToArray());
         }
 
-		public static string[] GetProjectDependencies(ProjectFile[] inputProjects, string treeBaseName, bool verbose)
+        public string[] GetProjectDependencies(ProjectFile[] inputProjects, string treeBaseName, bool verbose)
         {
             var projects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencesProjects));
             var dependencies = new List<string>();

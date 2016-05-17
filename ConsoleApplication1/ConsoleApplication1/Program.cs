@@ -18,19 +18,19 @@ namespace ConsoleApplication1
 			bool verbose = false;
 
             DependencyGraph dependencies = null;
-
+            var factory = new DependencyGraphFactory();
             //load saved if exists
             if (File.Exists(saveFileName))
             {
                 Console.WriteLine("Loading From Cache");
-                dependencies = DependencyGraphFactory.LoadFromFile(saveFileName);
+                dependencies = factory.LoadFromFile(saveFileName);
             }
 
             //if save didn't populate
             if (dependencies == null)
             {
-                dependencies = DependencyGraphFactory.BuildFromDisk(devFolder);
-                DependencyGraphFactory.SaveToFile(saveFileName, dependencies);
+                dependencies = factory.BuildFromDisk(devFolder);
+                factory.SaveToFile(saveFileName, dependencies);
             }
 
 
@@ -49,7 +49,7 @@ namespace ConsoleApplication1
                 if (consoleInput.Contains("--refresh"))
                 {
                     //refresh here
-                    DependencyGraphFactory.BuildFromDisk(devFolder);
+                    factory.BuildFromDisk(devFolder);
                     continue;
                 }
 
@@ -64,8 +64,8 @@ namespace ConsoleApplication1
 				{
 
 					//based on input file, 
-                    var upTheGraph = DependencyGraphFactory.GetDependantsForProject(selectedProjects.ToArray());
-                    var downTheGraph = DependencyGraphFactory.GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
+                    var upTheGraph = factory.GetDependantsForProject(selectedProjects.ToArray());
+                    var downTheGraph = factory.GetProjectDependencies(selectedProjects.ToArray(), string.Empty, verbose);
 
 					Console.WriteLine(
 		@"

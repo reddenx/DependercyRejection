@@ -42,10 +42,14 @@ namespace DependercyRejectionUI
 
         private DependencyGraph DependencyGraph;
 
+        private DependencyGraphFactory GraphFactory;
+
         public Form1()
         {
             InitializeComponent();
 
+            GraphFactory = new DependencyGraphFactory();
+            GraphFactory.OutputLog += GraphFactory_OutputLog;
             CurrentLoadState = LoadState.NotLoaded;
 
             Button_BuildFromDirectory.Click += Button_BuildFromDirectory_Click;
@@ -55,16 +59,10 @@ namespace DependercyRejectionUI
             Button_FilterAssembly.Click += Button_FilterAssembly_Click;
         }
 
-        private void Button_FilterAssembly_Click(object sender, EventArgs e)
+        private void GraphFactory_OutputLog(object sender, string msg)
         {
-            var selectedItem = (ComboBox_FilterAssembly.SelectedItem as ComboBoxItem);
-            if (selectedItem != null)
-            {
-                if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem && ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem) != null)
-                {
-                    BuildTreeInfo(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value, selectedItem.Value);
-                }
-            }
+            Label_StatusInformationText.Text = msg;
+            Update();
         }
 
         private void Button_SaveToCache_Click(object sender, EventArgs e)
@@ -80,7 +78,7 @@ namespace DependercyRejectionUI
 				{
 					File.Delete(dialog.FileName);
 				}
-				DependencyGraphFactory.SaveToFile(dialog.FileName, this.DependencyGraph);				
+				GraphFactory.SaveToFile(dialog.FileName, this.DependencyGraph);				
 			}
         }
 
@@ -95,7 +93,7 @@ namespace DependercyRejectionUI
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                this.DependencyGraph = DependencyGraphFactory.LoadFromFile(dialog.FileName);
+                this.DependencyGraph = GraphFactory.LoadFromFile(dialog.FileName);
                 this.CurrentLoadState = LoadState.Loaded;
 				PopulateComboBox();
 			}
@@ -109,198 +107,26 @@ namespace DependercyRejectionUI
             }
         }
 
-        private void BuildTreeInfo(ProjectFile projectFile, ProjectFile? filterProject = null)
+        private void Button_FilterAssembly_Click(object sender, EventArgs e)
         {
-            TreeView_AssemblyInformationTree.Nodes.Clear();
-            var baseNodes = BuildTreeNodesDown(projectFile, filterProject);
-            if (baseNodes != null)
+            var selectedItem = (ComboBox_FilterAssembly.SelectedItem as ComboBoxItem);
+            if (selectedItem != null)
             {
-                TreeView_AssemblyInformationTree.Nodes.Add(baseNodes.Item1);
-            }
-
-			var dependents = DependencyGraphFactory.GetDependantsForProject(new[] { projectFile });
-
-			var solutionNames = dependents
-				.SolutionFiles.Distinct()
-                .Select(sol => sol.FilePath)
-                .OrderBy(s => s)
-                .ToArray();
-            
-            var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
-
-            solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
-            TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
-
-			//var dependentNodes = dependents.ProjectFiles
-			//	.Distinct()
-			//	.OrderBy(proj => proj.AssemblyName)
-			//	.Select(proj => new TreeNode() { Text = proj.AssemblyName }).ToArray();
-			//var dependentsNode = new TreeNode() { Text = "Dependers " + dependentNodes.Length};
-			//dependentsNode.Nodes.AddRange(dependentNodes);
-
-   //         TreeView_AssemblyInformationTree.Nodes.Add(dependentsNode);
-
-
-			var up = BuildTreeNodesUp(projectFile, filterProject);
-			if (up != null)
-			{
-				var node = new TreeNode() { Text = "Dependers" };
-				node.Nodes.Add(up.Item1);
-				TreeView_AssemblyInformationTree.Nodes.Add(node);
-			}
-		}
-
-		//current
-		//recurse into children to get children
-
-		private Tuple<TreeNode, int> BuildTreeNodesDown(ProjectFile file, ProjectFile? filter)
-        {
-            var thisNode = new TreeNode();
-
-            if(filter.HasValue)
-            {
-                if (filter.Value.AssemblyName == file.AssemblyName)
+                if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem && ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem) != null)
                 {
-                    thisNode.Text = file.AssemblyName;
-                    return new Tuple<TreeNode, int>(thisNode, 1);
-                }
-                else if (!file.ReferencesProjects.Any())
-                {
-                    return null;
+                    BuildTreeInfo(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value, selectedItem.Value);
                 }
             }
-
-            int projectCount = 0;
-            foreach (var project in file.ReferencesProjects.OrderBy(proj => proj.AssemblyName))
-            {
-                var info = BuildTreeNodesDown(project, filter);
-                if (info != null)
-                {
-                    thisNode.Nodes.Add(info.Item1);
-                    projectCount += info.Item2;
-                }
-                else
-                {
-                    //return null;
-                }
-            }
-
-            if (filter.HasValue)
-            {
-                if (thisNode.Nodes.Count == 0)
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                projectCount += thisNode.Nodes.Count;
-            }
-
-            thisNode.Text = (string.Format("{0}: {1}", file.AssemblyName, projectCount));
-
-            return new Tuple<TreeNode, int>(thisNode, projectCount);
         }
-
-		private Tuple<TreeNode, int> BuildTreeNodesUp(ProjectFile file, ProjectFile? filter)
-		{
-			var thisNode = new TreeNode();
-
-			if (filter.HasValue)
-			{
-				if (filter.Value.AssemblyName == file.AssemblyName)
-				{
-					thisNode.Text = file.AssemblyName;
-					return new Tuple<TreeNode, int>(thisNode, 1);
-				}
-				else if (!file.ReferencedByProjects.Any())
-				{
-					return null;
-				}
-			}
-
-			int projectCount = 0;
-			foreach (var project in file.ReferencedByProjects.OrderBy(proj => proj.AssemblyName))
-			{
-				var info = BuildTreeNodesUp(project, filter);
-				if (info != null)
-				{
-					thisNode.Nodes.Add(info.Item1);
-					projectCount += info.Item2;
-				}
-				else
-				{
-					//return null;
-				}
-			}
-
-			if (filter.HasValue)
-			{
-				if (thisNode.Nodes.Count == 0)
-				{
-					return null;
-				}
-			}
-			else
-			{
-				projectCount += thisNode.Nodes.Count;
-			}
-
-			thisNode.Text = (string.Format("{0}: {1}", file.AssemblyName, projectCount));
-
-			return new Tuple<TreeNode, int>(thisNode, projectCount);
-		}
 
 		private void Button_BuildFromDirectory_Click(object sender, EventArgs e)
         {
-            DependencyGraph = ConsoleApplication1.DependencyGraphFactory.BuildFromDisk(TextBox_DirectoryInputText.Text);
+            DependencyGraph = GraphFactory.BuildFromDisk(TextBox_DirectoryInputText.Text);
 
             if (DependencyGraph != null)
             {
                 PopulateComboBox();
                 CurrentLoadState = LoadState.Loaded;
-            }
-        }
-
-        private void PopulateComboBox()
-        {
-			ComboBox_AssemblySelector.Items.Clear();
-			var items = DependencyGraph.ProjectFiles
-				.OrderBy(proj => proj.AssemblyName)
-				.Select(project =>
-			{
-				return new ComboBoxItem()
-				{
-					Text = project.AssemblyName,
-					Value = project
-				};
-			}).ToArray();
-
-			foreach (var item in items.Where(item => item.Text != null))
-			{
-				ComboBox_AssemblySelector.Items.Add(item);
-                ComboBox_FilterAssembly.Items.Add(item);
-			}
-		}
-
-        private void SetAssemblyControls(bool enabled)
-        {
-            Button_SaveToCache.Enabled = enabled;
-            ComboBox_AssemblySelector.Enabled = enabled;
-            ComboBox_FilterAssembly.Enabled = enabled;
-            Button_LoadAssemblyInformation.Enabled = enabled;
-            Button_FilterAssembly.Enabled = enabled;
-            TreeView_AssemblyInformationTree.Enabled = enabled;
-        }
-
-        private class ComboBoxItem
-        {
-            public string Text { get; set; }
-            public ProjectFile Value { get; set; }
-
-            public override string ToString()
-            {
-                return Text;
             }
         }
 
@@ -318,6 +144,80 @@ namespace DependercyRejectionUI
 3) wait a really long time for monster to populate
 4) Select assembly in question
 5) Watch and be amazed!", "How to use this shit");
+        }
+
+
+
+        private void SetAssemblyControls(bool enabled)
+        {
+            Button_SaveToCache.Enabled = enabled;
+            ComboBox_AssemblySelector.Enabled = enabled;
+            ComboBox_FilterAssembly.Enabled = enabled;
+            Button_LoadAssemblyInformation.Enabled = enabled;
+            Button_FilterAssembly.Enabled = enabled;
+            TreeView_AssemblyInformationTree.Enabled = enabled;
+        }
+
+        private void PopulateComboBox()
+        {
+            ComboBox_AssemblySelector.Items.Clear();
+            var items = DependencyGraph.ProjectFiles
+                .OrderBy(proj => proj.AssemblyName)
+                .Select(project =>
+                {
+                    return new ComboBoxItem()
+                    {
+                        Text = project.AssemblyName,
+                        Value = project
+                    };
+                }).ToArray();
+
+            foreach (var item in items.Where(item => item.Text != null))
+            {
+                ComboBox_AssemblySelector.Items.Add(item);
+                ComboBox_FilterAssembly.Items.Add(item);
+            }
+        }
+
+        private void BuildTreeInfo(ProjectFile projectFile, ProjectFile? filterProject = null)
+        {
+            TreeView_AssemblyInformationTree.Nodes.Clear();
+
+            var down = TreeNodeBuilder.BuildTreeNodesDown(projectFile, filterProject);
+            if (down != null)
+            {
+                var node = new TreeNode() { Text = "Dependencies Down " + down.Item1.Nodes.Count };
+                TreeView_AssemblyInformationTree.Nodes.Add(down.Item1);
+            }
+
+            var up = TreeNodeBuilder.BuildTreeNodesUp(projectFile, filterProject);
+            if (up != null)
+            {
+                var node = new TreeNode() { Text = "Dependencies Up " + up.Item1.Nodes.Count };
+                node.Nodes.Add(up.Item1);
+                TreeView_AssemblyInformationTree.Nodes.Add(node);
+            }
+
+            var dependents = GraphFactory.GetDependantsForProject(new[] { projectFile });
+            var solutionNames = dependents
+                .SolutionFiles.Distinct()
+                .Select(sol => sol.FilePath)
+                .OrderBy(s => s)
+                .ToArray();
+            var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
+            solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
+            TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
+        }
+
+        private class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public ProjectFile Value { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
         }
     }
 }

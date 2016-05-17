@@ -13,7 +13,7 @@ namespace ConsoleApplication1
         public string FilePath;
         public List<ProjectFile> Projects; //guid identifier
 
-        public SolutionFile(string filePath)
+        private SolutionFile(string filePath)
         {
             FilePath = filePath;
             Projects = new List<ProjectFile>();

@@ -18,7 +18,7 @@ namespace ConsoleApplication1
         public List<SolutionFile> ReferencedBySolutions;
         public Guid ProjectId; //guid identifier
 
-        public ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds)
+        private ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds)
         {
             FilePath = filePath;
             ProjectId = projectId;

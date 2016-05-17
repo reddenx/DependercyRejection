@@ -34,6 +34,8 @@
             this.Button_SaveToCache = new System.Windows.Forms.Button();
             this.ComboBox_AssemblySelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.Button_FilterAssembly = new System.Windows.Forms.Button();
+            this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
             this.TreeView_AssemblyInformationTree = new System.Windows.Forms.TreeView();
             this.Button_LoadAssemblyInformation = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -41,8 +43,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howTheShitDoIUseThisThingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
-            this.Button_FilterAssembly = new System.Windows.Forms.Button();
+            this.Label_StatusInformationText = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -104,6 +105,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lookup Assemblies";
             // 
+            // Button_FilterAssembly
+            // 
+            this.Button_FilterAssembly.Location = new System.Drawing.Point(463, 44);
+            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
+            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
+            this.Button_FilterAssembly.TabIndex = 8;
+            this.Button_FilterAssembly.Text = "Filter";
+            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
+            // 
+            // ComboBox_FilterAssembly
+            // 
+            this.ComboBox_FilterAssembly.FormattingEnabled = true;
+            this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
+            this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
+            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(451, 21);
+            this.ComboBox_FilterAssembly.TabIndex = 7;
+            this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
+            // 
             // TreeView_AssemblyInformationTree
             // 
             this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 73);
@@ -161,29 +180,20 @@
             this.howTheShitDoIUseThisThingToolStripMenuItem.Text = "How the shit do I use this thing?";
             this.howTheShitDoIUseThisThingToolStripMenuItem.Click += new System.EventHandler(this.howTheShitDoIUseThisThingToolStripMenuItem_Click);
             // 
-            // ComboBox_FilterAssembly
+            // Label_StatusInformationText
             // 
-            this.ComboBox_FilterAssembly.FormattingEnabled = true;
-            this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
-            this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
-            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(451, 21);
-            this.ComboBox_FilterAssembly.TabIndex = 7;
-            this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
-            // 
-            // Button_FilterAssembly
-            // 
-            this.Button_FilterAssembly.Location = new System.Drawing.Point(463, 44);
-            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
-            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
-            this.Button_FilterAssembly.TabIndex = 8;
-            this.Button_FilterAssembly.Text = "Filter";
-            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
+            this.Label_StatusInformationText.AutoSize = true;
+            this.Label_StatusInformationText.Location = new System.Drawing.Point(18, 66);
+            this.Label_StatusInformationText.Name = "Label_StatusInformationText";
+            this.Label_StatusInformationText.Size = new System.Drawing.Size(0, 13);
+            this.Label_StatusInformationText.TabIndex = 7;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 720);
+            this.Controls.Add(this.Label_StatusInformationText);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Button_SaveToCache);
             this.Controls.Add(this.Button_LoadFromCache);
@@ -218,6 +228,7 @@
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
         private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
         private System.Windows.Forms.Button Button_FilterAssembly;
+        private System.Windows.Forms.Label Label_StatusInformationText;
 
 
 
