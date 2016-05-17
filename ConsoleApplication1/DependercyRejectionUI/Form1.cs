@@ -65,6 +65,17 @@ namespace DependercyRejectionUI
             Update();
         }
 
+        private void Button_BuildFromDirectory_Click(object sender, EventArgs e)
+        {
+            DependencyGraph = GraphFactory.BuildFromDisk(TextBox_DirectoryInputText.Text);
+
+            if (DependencyGraph != null)
+            {
+                PopulateComboBox();
+                CurrentLoadState = LoadState.Loaded;
+            }
+        }
+
         private void Button_SaveToCache_Click(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog();
@@ -103,7 +114,7 @@ namespace DependercyRejectionUI
         {
             if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem && ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem) != null)
             {
-                BuildTreeInfo(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value);
+                BuildFilteredProjectTree(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value);
             }
         }
 
@@ -114,21 +125,11 @@ namespace DependercyRejectionUI
             {
                 if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem && ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem) != null)
                 {
-                    BuildTreeInfo(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value, selectedItem.Value);
+                    BuildFilteredProjectTree(((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value, selectedItem.Value);
                 }
             }
         }
 
-		private void Button_BuildFromDirectory_Click(object sender, EventArgs e)
-        {
-            DependencyGraph = GraphFactory.BuildFromDisk(TextBox_DirectoryInputText.Text);
-
-            if (DependencyGraph != null)
-            {
-                PopulateComboBox();
-                CurrentLoadState = LoadState.Loaded;
-            }
-        }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -179,7 +180,7 @@ namespace DependercyRejectionUI
             }
         }
 
-        private void BuildTreeInfo(ProjectFile projectFile, ProjectFile? filterProject = null)
+        private void BuildFilteredProjectTree(ProjectFile projectFile, ProjectFile? filterProject = null)
         {
             TreeView_AssemblyInformationTree.Nodes.Clear();
 
@@ -187,7 +188,7 @@ namespace DependercyRejectionUI
             if (down != null)
             {
                 var node = new TreeNode() { Text = "Dependencies Down " + down.Item1.Nodes.Count };
-                TreeView_AssemblyInformationTree.Nodes.Add(down.Item1);
+                TreeView_AssemblyInformationTree.Nodes.Add(node);
             }
 
             var up = TreeNodeBuilder.BuildTreeNodesUp(projectFile, filterProject);
@@ -207,6 +208,16 @@ namespace DependercyRejectionUI
             var solutionsNode = new TreeNode() { Text = "Solutions " + solutionNames.Length };
             solutionsNode.Nodes.AddRange(solutionNames.Select(sol => new TreeNode() { Text = sol }).ToArray());
             TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
+        }
+
+        private void BuildAllEntryTree(ProjectFile[] allProjects)
+        {
+            var masterList = new List<ProjectFile>();
+            foreach (var project in allProjects)
+            {
+                //determine if all projects referencing this one are test projects
+                //"Library"
+            }
         }
 
         private class ComboBoxItem

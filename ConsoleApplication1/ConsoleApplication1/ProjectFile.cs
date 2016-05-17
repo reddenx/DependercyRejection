@@ -12,6 +12,7 @@ namespace ConsoleApplication1
     {
         public string FilePath;
         public string AssemblyName;
+        public string OutputType;
         public Guid[] ReferencesProjectIds; //intermediate step before graph building
         public List<ProjectFile> ReferencesProjects;
         public List<ProjectFile> ReferencedByProjects;
