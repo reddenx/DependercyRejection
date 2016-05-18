@@ -261,5 +261,30 @@ namespace DependercyRejectionUI
 4) Select assembly in question
 5) Watch and be amazed!", "How to use this shit");
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadProjectTypes();
+        }
+
+        private void LoadProjectTypes()
+        {
+            var projectTypes = ProjectTypeDict.Factory();
+
+            chkProjectTypes.Items.AddRange(
+                projectTypes.Select(i => new
+                {
+                    key = i.Key,
+                    value = i.Value.ToString()
+                })
+                .ToArray());
+
+            chkProjectTypes.DisplayMember = "value";
+        }
+
+        private void chkProjectTypes_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            Console.WriteLine(e.NewValue);
+        }
     }
 }

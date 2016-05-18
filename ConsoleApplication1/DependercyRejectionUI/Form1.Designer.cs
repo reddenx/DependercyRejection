@@ -34,6 +34,8 @@
             this.Button_SaveToCache = new System.Windows.Forms.Button();
             this.ComboBox_AssemblySelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.Button_FilterAssembly = new System.Windows.Forms.Button();
+            this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
             this.TreeView_AssemblyInformationTree = new System.Windows.Forms.TreeView();
             this.Button_LoadAssemblyInformation = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -41,10 +43,11 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howTheShitDoIUseThisThingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
-            this.Button_FilterAssembly = new System.Windows.Forms.Button();
+            this.grpProjectTypes = new System.Windows.Forms.GroupBox();
+            this.chkProjectTypes = new System.Windows.Forms.CheckedListBox();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.grpProjectTypes.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBox_DirectoryInputText
@@ -87,7 +90,7 @@
             this.ComboBox_AssemblySelector.FormattingEnabled = true;
             this.ComboBox_AssemblySelector.Location = new System.Drawing.Point(6, 19);
             this.ComboBox_AssemblySelector.Name = "ComboBox_AssemblySelector";
-            this.ComboBox_AssemblySelector.Size = new System.Drawing.Size(451, 21);
+            this.ComboBox_AssemblySelector.Size = new System.Drawing.Size(368, 21);
             this.ComboBox_AssemblySelector.TabIndex = 4;
             // 
             // groupBox1
@@ -99,21 +102,39 @@
             this.groupBox1.Controls.Add(this.ComboBox_AssemblySelector);
             this.groupBox1.Location = new System.Drawing.Point(12, 89);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(544, 619);
+            this.groupBox1.Size = new System.Drawing.Size(469, 628);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lookup Assemblies";
+            // 
+            // Button_FilterAssembly
+            // 
+            this.Button_FilterAssembly.Location = new System.Drawing.Point(382, 44);
+            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
+            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
+            this.Button_FilterAssembly.TabIndex = 8;
+            this.Button_FilterAssembly.Text = "Filter";
+            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
+            // 
+            // ComboBox_FilterAssembly
+            // 
+            this.ComboBox_FilterAssembly.FormattingEnabled = true;
+            this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
+            this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
+            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(368, 21);
+            this.ComboBox_FilterAssembly.TabIndex = 7;
+            this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
             // 
             // TreeView_AssemblyInformationTree
             // 
             this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 73);
             this.TreeView_AssemblyInformationTree.Name = "TreeView_AssemblyInformationTree";
-            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 540);
+            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(451, 540);
             this.TreeView_AssemblyInformationTree.TabIndex = 6;
             // 
             // Button_LoadAssemblyInformation
             // 
-            this.Button_LoadAssemblyInformation.Location = new System.Drawing.Point(463, 17);
+            this.Button_LoadAssemblyInformation.Location = new System.Drawing.Point(382, 15);
             this.Button_LoadAssemblyInformation.Name = "Button_LoadAssemblyInformation";
             this.Button_LoadAssemblyInformation.Size = new System.Drawing.Size(75, 23);
             this.Button_LoadAssemblyInformation.TabIndex = 5;
@@ -127,7 +148,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(569, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(807, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -161,29 +182,31 @@
             this.howTheShitDoIUseThisThingToolStripMenuItem.Text = "How the shit do I use this thing?";
             this.howTheShitDoIUseThisThingToolStripMenuItem.Click += new System.EventHandler(this.howTheShitDoIUseThisThingToolStripMenuItem_Click);
             // 
-            // ComboBox_FilterAssembly
+            // grpProjectTypes
             // 
-            this.ComboBox_FilterAssembly.FormattingEnabled = true;
-            this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
-            this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
-            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(451, 21);
-            this.ComboBox_FilterAssembly.TabIndex = 7;
-            this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
+            this.grpProjectTypes.Controls.Add(this.chkProjectTypes);
+            this.grpProjectTypes.Location = new System.Drawing.Point(487, 89);
+            this.grpProjectTypes.Name = "grpProjectTypes";
+            this.grpProjectTypes.Size = new System.Drawing.Size(281, 628);
+            this.grpProjectTypes.TabIndex = 7;
+            this.grpProjectTypes.TabStop = false;
+            this.grpProjectTypes.Text = "Project Types";
             // 
-            // Button_FilterAssembly
+            // chkProjectTypes
             // 
-            this.Button_FilterAssembly.Location = new System.Drawing.Point(463, 44);
-            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
-            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
-            this.Button_FilterAssembly.TabIndex = 8;
-            this.Button_FilterAssembly.Text = "Filter";
-            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
+            this.chkProjectTypes.FormattingEnabled = true;
+            this.chkProjectTypes.Location = new System.Drawing.Point(6, 19);
+            this.chkProjectTypes.Name = "chkProjectTypes";
+            this.chkProjectTypes.Size = new System.Drawing.Size(269, 589);
+            this.chkProjectTypes.TabIndex = 0;
+            this.chkProjectTypes.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkProjectTypes_ItemCheck);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(569, 720);
+            this.ClientSize = new System.Drawing.Size(807, 863);
+            this.Controls.Add(this.grpProjectTypes);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Button_SaveToCache);
             this.Controls.Add(this.Button_LoadFromCache);
@@ -193,9 +216,11 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.grpProjectTypes.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -218,9 +243,8 @@
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
         private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
         private System.Windows.Forms.Button Button_FilterAssembly;
-
-
-
+        private System.Windows.Forms.GroupBox grpProjectTypes;
+        private System.Windows.Forms.CheckedListBox chkProjectTypes;
     }
 }
 
