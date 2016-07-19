@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace ConsoleApplication1
+namespace AltSource.Utilities.VSSolution.Filters
 {
-    public interface IGraphFilter
+    public interface IGraphFilter: IEquatable<IGraphFilter>
     {
         bool IsVisible(ProjectFile project);
     }

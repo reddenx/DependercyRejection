@@ -43,11 +43,19 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howTheShitDoIUseThisThingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+<<<<<<< HEAD
             this.grpProjectTypes = new System.Windows.Forms.GroupBox();
             this.chkProjectTypes = new System.Windows.Forms.CheckedListBox();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.grpProjectTypes.SuspendLayout();
+=======
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.ToolStatusLabel_OutputStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.groupBox1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.SuspendLayout();
             // 
             // TextBox_DirectoryInputText
@@ -102,14 +110,22 @@
             this.groupBox1.Controls.Add(this.ComboBox_AssemblySelector);
             this.groupBox1.Location = new System.Drawing.Point(12, 89);
             this.groupBox1.Name = "groupBox1";
+<<<<<<< HEAD
             this.groupBox1.Size = new System.Drawing.Size(469, 628);
+=======
+            this.groupBox1.Size = new System.Drawing.Size(544, 650);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Lookup Assemblies";
             // 
             // Button_FilterAssembly
             // 
+<<<<<<< HEAD
             this.Button_FilterAssembly.Location = new System.Drawing.Point(382, 44);
+=======
+            this.Button_FilterAssembly.Location = new System.Drawing.Point(463, 44);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.Button_FilterAssembly.Name = "Button_FilterAssembly";
             this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
             this.Button_FilterAssembly.TabIndex = 8;
@@ -121,7 +137,11 @@
             this.ComboBox_FilterAssembly.FormattingEnabled = true;
             this.ComboBox_FilterAssembly.Location = new System.Drawing.Point(6, 46);
             this.ComboBox_FilterAssembly.Name = "ComboBox_FilterAssembly";
+<<<<<<< HEAD
             this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(368, 21);
+=======
+            this.ComboBox_FilterAssembly.Size = new System.Drawing.Size(451, 21);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.ComboBox_FilterAssembly.TabIndex = 7;
             this.ComboBox_FilterAssembly.Text = "Select a filter assembly";
             // 
@@ -129,7 +149,11 @@
             // 
             this.TreeView_AssemblyInformationTree.Location = new System.Drawing.Point(6, 73);
             this.TreeView_AssemblyInformationTree.Name = "TreeView_AssemblyInformationTree";
+<<<<<<< HEAD
             this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(451, 540);
+=======
+            this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(532, 571);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.TreeView_AssemblyInformationTree.TabIndex = 6;
             // 
             // Button_LoadAssemblyInformation
@@ -182,6 +206,7 @@
             this.howTheShitDoIUseThisThingToolStripMenuItem.Text = "How the shit do I use this thing?";
             this.howTheShitDoIUseThisThingToolStripMenuItem.Click += new System.EventHandler(this.howTheShitDoIUseThisThingToolStripMenuItem_Click);
             // 
+<<<<<<< HEAD
             // grpProjectTypes
             // 
             this.grpProjectTypes.Controls.Add(this.chkProjectTypes);
@@ -200,13 +225,34 @@
             this.chkProjectTypes.Size = new System.Drawing.Size(269, 589);
             this.chkProjectTypes.TabIndex = 0;
             this.chkProjectTypes.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkProjectTypes_ItemCheck);
+=======
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStatusLabel_OutputStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 742);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(569, 22);
+            this.statusStrip1.TabIndex = 8;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // ToolStatusLabel_OutputStatus
+            // 
+            this.ToolStatusLabel_OutputStatus.Name = "ToolStatusLabel_OutputStatus";
+            this.ToolStatusLabel_OutputStatus.Size = new System.Drawing.Size(0, 17);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+<<<<<<< HEAD
             this.ClientSize = new System.Drawing.Size(807, 863);
             this.Controls.Add(this.grpProjectTypes);
+=======
+            this.ClientSize = new System.Drawing.Size(569, 764);
+            this.Controls.Add(this.statusStrip1);
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Button_SaveToCache);
             this.Controls.Add(this.Button_LoadFromCache);
@@ -220,7 +266,12 @@
             this.groupBox1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+<<<<<<< HEAD
             this.grpProjectTypes.ResumeLayout(false);
+=======
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,8 +294,16 @@
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
         private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
         private System.Windows.Forms.Button Button_FilterAssembly;
+<<<<<<< HEAD
         private System.Windows.Forms.GroupBox grpProjectTypes;
         private System.Windows.Forms.CheckedListBox chkProjectTypes;
+=======
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel ToolStatusLabel_OutputStatus;
+
+
+
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
     }
 }
 
