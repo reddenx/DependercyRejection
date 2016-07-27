@@ -21,11 +21,7 @@ namespace AltSource.Utilities.VSSolution
             get { return Path.GetFileName(this.FilePath); }
         }
 
-<<<<<<< HEAD
         public static SolutionFile BuildFromFile(string filePath, List<ProjectFile> projectList)
-=======
-        public static SolutionFile BuildFromFile(string filePath, ProjectFile[] projectList)
->>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
         {
             var inputText = File.ReadAllText(filePath);
 
@@ -44,7 +40,6 @@ namespace AltSource.Utilities.VSSolution
                 if (projectString != null)
                 {
                     var projectGuid = ParseProjectGuid(projectString);
-<<<<<<< HEAD
                     var dependentProjects = projectList.Where(proj => proj.ProjectId == projectGuid).ToList();
 
                     if (dependentProjects.Count() == 0)
@@ -60,9 +55,6 @@ namespace AltSource.Utilities.VSSolution
                         }
                     }
 
-=======
-                    var dependentProjects = projectList.Where(proj => proj.ProjectId == projectGuid);
->>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
                     solution.Projects.AddRange(dependentProjects);
                     foreach (var project in dependentProjects)
                     {
@@ -125,7 +117,6 @@ EndProject",
 
         public bool RemoveProjectFileFromSolution(ProjectFile projectFile)
         {
-<<<<<<< HEAD
             var regexProjRef = new Regex(@"Project\(""{.+(?:" + projectFile.ProjectId.ToString() + @")}""\r\nEndProject\r\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             var regexConfigs = new Regex(@"^\s*\{" + projectFile.ProjectId.ToString() + @"\}.+", RegexOptions.IgnoreCase);
 
@@ -135,13 +126,6 @@ EndProject",
 
                 InputText = regexConfigs.Replace(InputText, String.Empty);
 
-=======
-            var regex = new Regex(@"Project\(""{.+(?:" + projectFile.ProjectId.ToString() + @")}""\r\nEndProject\r\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-            if (regex.IsMatch(InputText))
-            {
-                InputText = regex.Replace(InputText, string.Empty);
->>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
                 File.WriteAllText(this.FilePath, this.InputText);
                 this.Projects.RemoveAll( p => p.ProjectId == projectFile.ProjectId);
                 return true;
@@ -180,7 +164,6 @@ EndProject",
             return Guid.Parse(idGuidStr);
         }
 
-<<<<<<< HEAD
         private static string ParseProjectAssemblyName(string projectString)
         {
             //Parsing this: ("typeGuid") = "NAME", "path", "IDGuid"
@@ -193,8 +176,6 @@ EndProject",
             return assName;
         }
 
-=======
->>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
         public override bool Equals(object obj)
         {
             return this.FilePath == ((SolutionFile)obj).FilePath;

@@ -13,10 +13,10 @@ namespace AltSource.Utilities.VSSolution
         public ProjectFile[] ProjectFiles;
         public SolutionFile[] SolutionFiles;
 
-        public DependencyGraph(ProjectFile[] projects, SolutionFile[] solutions)
+        public DependencyGraph(IEnumerable<ProjectFile> projects, IEnumerable<SolutionFile> solutions)
         {
-            this.ProjectFiles = projects;
-            this.SolutionFiles = solutions;
+            this.ProjectFiles = projects.ToArray();
+            this.SolutionFiles = solutions.ToArray();
         }
 
         public ProjectFile FindFileByName(string fileProjectName)

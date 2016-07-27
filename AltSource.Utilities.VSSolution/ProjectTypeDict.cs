@@ -64,12 +64,9 @@ namespace AltSource.Utilities.VSSolution
                 {new Guid("E3E379DF-F4C6-4180-9B81-6769533ABE47"), new ProjectType(new Guid("E3E379DF-F4C6-4180-9B81-6769533ABE47"),  "ASP.NET MVC 4", Color.Blue)},
                 {new Guid("349C5851-65DF-11DA-9384-00065B846F21"), new ProjectType(new Guid("349C5851-65DF-11DA-9384-00065B846F21"),  "ASP.NET MVC 5", Color.Blue)},
 
-<<<<<<< HEAD
 
                 {new Guid("D183A3D8-5FD8-494B-B014-37F57B35E655"), new ProjectType(new Guid("D183A3D8-5FD8-494B-B014-37F57B35E655"),  "SSIS Data Transfer", Color.Tan)},
 
-=======
->>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
                 {new Guid("2150E333-8FDC-42A3-9474-1A3956D46DE8"), new ProjectType(new Guid("2150E333-8FDC-42A3-9474-1A3956D46DE8"),  "Solution Folder", Color.MediumPurple)},
                 {new Guid("FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"), new ProjectType(new Guid("FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"),  "C#", Color.DarkGray)},
             };
