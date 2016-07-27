@@ -21,7 +21,7 @@ namespace AltSource.Utilities.VSSolution
             get { return Path.GetFileName(this.FilePath); }
         }
 
-        public static SolutionFile BuildFromFile(string filePath, ProjectFile[] projectList)
+        public static SolutionFile BuildFromFile(string filePath, List<ProjectFile> projectList)
         {
             var inputText = File.ReadAllText(filePath);
 
@@ -40,7 +40,21 @@ namespace AltSource.Utilities.VSSolution
                 if (projectString != null)
                 {
                     var projectGuid = ParseProjectGuid(projectString);
-                    var dependentProjects = projectList.Where(proj => proj.ProjectId == projectGuid);
+                    var dependentProjects = projectList.Where(proj => proj.ProjectId == projectGuid).ToList();
+
+                    if (dependentProjects.Count() == 0)
+                    {
+                        ProjectType projectType = ParseProjectType(projectString);
+                        //Is solutionFolder
+                        if (projectType.ID != Guid.Parse("2150E333-8FDC-42A3-9474-1A3956D46DE8"))
+                        {
+                            var assName = ParseProjectAssemblyName(projectString);
+                            var stubProject = ProjectFile.Build(projectGuid, assName, projectType);
+                            dependentProjects.Add(stubProject);
+                            projectList.Add(stubProject);
+                        }
+                    }
+
                     solution.Projects.AddRange(dependentProjects);
                     foreach (var project in dependentProjects)
                     {
@@ -103,11 +117,15 @@ EndProject",
 
         public bool RemoveProjectFileFromSolution(ProjectFile projectFile)
         {
-            var regex = new Regex(@"Project\(""{.+(?:" + projectFile.ProjectId.ToString() + @")}""\r\nEndProject\r\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            var regexProjRef = new Regex(@"Project\(""{.+(?:" + projectFile.ProjectId.ToString() + @")}""\r\nEndProject\r\n", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            var regexConfigs = new Regex(@"^\s*\{" + projectFile.ProjectId.ToString() + @"\}.+", RegexOptions.IgnoreCase);
 
-            if (regex.IsMatch(InputText))
+            if (regexProjRef.IsMatch(InputText))
             {
-                InputText = regex.Replace(InputText, string.Empty);
+                InputText = regexProjRef.Replace(InputText, string.Empty);
+
+                InputText = regexConfigs.Replace(InputText, String.Empty);
+
                 File.WriteAllText(this.FilePath, this.InputText);
                 this.Projects.RemoveAll( p => p.ProjectId == projectFile.ProjectId);
                 return true;
@@ -144,6 +162,18 @@ EndProject",
                                 .Trim();
 
             return Guid.Parse(idGuidStr);
+        }
+
+        private static string ParseProjectAssemblyName(string projectString)
+        {
+            //Parsing this: ("typeGuid") = "NAME", "path", "IDGuid"
+            var assName = projectString
+                                .Split(',')[0]
+                                .Split('=')[1]
+                                .Replace("\"", "")
+                                .Trim();
+
+            return assName;
         }
 
         public override bool Equals(object obj)

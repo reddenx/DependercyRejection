@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.TextBox_DirectoryInputText = new System.Windows.Forms.TextBox();
             this.Button_BuildFromDirectory = new System.Windows.Forms.Button();
             this.Button_LoadFromCache = new System.Windows.Forms.Button();
@@ -35,7 +36,6 @@
             this.ComboBox_AssemblySelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.TreeView_AssemblyInformationTree = new System.Windows.Forms.TreeView();
-            this.Button_FilterAssembly = new System.Windows.Forms.Button();
             this.ComboBox_FilterAssembly = new System.Windows.Forms.ComboBox();
             this.Button_LoadAssemblyInformation = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -52,17 +52,31 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txtMissing = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtFrameworkVersion = new System.Windows.Forms.TextBox();
+            this.Version = new System.Windows.Forms.Label();
+            this.txtPackageVersion = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtPackageId = new System.Windows.Forms.TextBox();
+            this.btnAddPackage = new System.Windows.Forms.Button();
+            this.txtResults = new System.Windows.Forms.RichTextBox();
+            this.txtDestProjects = new System.Windows.Forms.RichTextBox();
+            this.btnFillWithAncestors = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtProjGuid = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtProjName = new System.Windows.Forms.TextBox();
+            this.btnRemoveFromAllSolns = new System.Windows.Forms.Button();
             this.btnRemoveProjectFromSolns = new System.Windows.Forms.Button();
             this.btnFixDeadbeatSolutions = new System.Windows.Forms.Button();
             this.btnDeadBeatSolns = new System.Windows.Forms.Button();
-            this.btnCleanReferences = new System.Windows.Forms.Button();
+            this.btnRemoveReferences = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtResults = new System.Windows.Forms.TextBox();
             this.btnAddReference = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtDestProjects = new System.Windows.Forms.TextBox();
+            this.tooltipDeadbeats = new System.Windows.Forms.ToolTip(this.components);
             this.chkProjectTypes = new DependercyRejectionUI.ColoredCheckListBox();
-            this.btnRemoveFromAllSolns = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.grpProjectTypes.SuspendLayout();
@@ -86,7 +100,7 @@
             this.Button_BuildFromDirectory.Name = "Button_BuildFromDirectory";
             this.Button_BuildFromDirectory.Size = new System.Drawing.Size(119, 23);
             this.Button_BuildFromDirectory.TabIndex = 1;
-            this.Button_BuildFromDirectory.Text = "Look For Projects";
+            this.Button_BuildFromDirectory.Text = "Load from FileSystem";
             this.Button_BuildFromDirectory.UseVisualStyleBackColor = true;
             this.Button_BuildFromDirectory.Click += new System.EventHandler(this.Button_BuildFromDirectory_Click);
             // 
@@ -134,16 +148,6 @@
             this.TreeView_AssemblyInformationTree.Name = "TreeView_AssemblyInformationTree";
             this.TreeView_AssemblyInformationTree.Size = new System.Drawing.Size(651, 594);
             this.TreeView_AssemblyInformationTree.TabIndex = 6;
-            // 
-            // Button_FilterAssembly
-            // 
-            this.Button_FilterAssembly.Location = new System.Drawing.Point(388, 91);
-            this.Button_FilterAssembly.Name = "Button_FilterAssembly";
-            this.Button_FilterAssembly.Size = new System.Drawing.Size(75, 23);
-            this.Button_FilterAssembly.TabIndex = 8;
-            this.Button_FilterAssembly.Text = "Filter";
-            this.Button_FilterAssembly.UseVisualStyleBackColor = true;
-            this.Button_FilterAssembly.Click += new System.EventHandler(this.Button_FilterAssembly_Click);
             // 
             // ComboBox_FilterAssembly
             // 
@@ -287,16 +291,29 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.txtMissing);
+            this.tabPage1.Controls.Add(this.label6);
+            this.tabPage1.Controls.Add(this.txtFrameworkVersion);
+            this.tabPage1.Controls.Add(this.Version);
+            this.tabPage1.Controls.Add(this.txtPackageVersion);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.txtPackageId);
+            this.tabPage1.Controls.Add(this.btnAddPackage);
+            this.tabPage1.Controls.Add(this.txtResults);
+            this.tabPage1.Controls.Add(this.txtDestProjects);
+            this.tabPage1.Controls.Add(this.btnFillWithAncestors);
+            this.tabPage1.Controls.Add(this.label4);
+            this.tabPage1.Controls.Add(this.txtProjGuid);
+            this.tabPage1.Controls.Add(this.label3);
+            this.tabPage1.Controls.Add(this.txtProjName);
             this.tabPage1.Controls.Add(this.btnRemoveFromAllSolns);
             this.tabPage1.Controls.Add(this.btnRemoveProjectFromSolns);
             this.tabPage1.Controls.Add(this.btnFixDeadbeatSolutions);
             this.tabPage1.Controls.Add(this.btnDeadBeatSolns);
-            this.tabPage1.Controls.Add(this.btnCleanReferences);
+            this.tabPage1.Controls.Add(this.btnRemoveReferences);
             this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.txtResults);
             this.tabPage1.Controls.Add(this.btnAddReference);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.txtDestProjects);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -305,11 +322,150 @@
             this.tabPage1.Text = "Modify Projects";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // txtMissing
+            // 
+            this.txtMissing.Location = new System.Drawing.Point(10, 240);
+            this.txtMissing.Name = "txtMissing";
+            this.txtMissing.Size = new System.Drawing.Size(193, 29);
+            this.txtMissing.TabIndex = 24;
+            this.txtMissing.Text = "List Missing Projects";
+            this.txtMissing.UseVisualStyleBackColor = true;
+            this.txtMissing.Click += new System.EventHandler(this.txtMissing_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 579);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(94, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "FrameworkVersion";
+            // 
+            // txtFrameworkVersion
+            // 
+            this.txtFrameworkVersion.Location = new System.Drawing.Point(13, 598);
+            this.txtFrameworkVersion.Name = "txtFrameworkVersion";
+            this.txtFrameworkVersion.Size = new System.Drawing.Size(190, 20);
+            this.txtFrameworkVersion.TabIndex = 22;
+            this.txtFrameworkVersion.Text = "net45";
+            // 
+            // Version
+            // 
+            this.Version.AutoSize = true;
+            this.Version.Location = new System.Drawing.Point(10, 537);
+            this.Version.Name = "Version";
+            this.Version.Size = new System.Drawing.Size(88, 13);
+            this.Version.TabIndex = 21;
+            this.Version.Text = "Package Version";
+            // 
+            // txtPackageVersion
+            // 
+            this.txtPackageVersion.Location = new System.Drawing.Point(10, 556);
+            this.txtPackageVersion.Name = "txtPackageVersion";
+            this.txtPackageVersion.Size = new System.Drawing.Size(190, 20);
+            this.txtPackageVersion.TabIndex = 20;
+            this.txtPackageVersion.Text = "1.0.0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 494);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 13);
+            this.label5.TabIndex = 19;
+            this.label5.Text = "Package Id";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // txtPackageId
+            // 
+            this.txtPackageId.Location = new System.Drawing.Point(7, 510);
+            this.txtPackageId.Name = "txtPackageId";
+            this.txtPackageId.Size = new System.Drawing.Size(193, 20);
+            this.txtPackageId.TabIndex = 18;
+            // 
+            // btnAddPackage
+            // 
+            this.btnAddPackage.Location = new System.Drawing.Point(7, 464);
+            this.btnAddPackage.Name = "btnAddPackage";
+            this.btnAddPackage.Size = new System.Drawing.Size(193, 23);
+            this.btnAddPackage.TabIndex = 17;
+            this.btnAddPackage.Text = "Add package to listed projects";
+            this.btnAddPackage.UseVisualStyleBackColor = true;
+            this.btnAddPackage.Click += new System.EventHandler(this.btnAddPackage_Click);
+            // 
+            // txtResults
+            // 
+            this.txtResults.Location = new System.Drawing.Point(548, 51);
+            this.txtResults.Name = "txtResults";
+            this.txtResults.Size = new System.Drawing.Size(429, 567);
+            this.txtResults.TabIndex = 16;
+            this.txtResults.Text = "";
+            // 
+            // txtDestProjects
+            // 
+            this.txtDestProjects.Location = new System.Drawing.Point(206, 163);
+            this.txtDestProjects.Name = "txtDestProjects";
+            this.txtDestProjects.Size = new System.Drawing.Size(334, 452);
+            this.txtDestProjects.TabIndex = 15;
+            this.txtDestProjects.Text = "";
+            // 
+            // btnFillWithAncestors
+            // 
+            this.btnFillWithAncestors.Location = new System.Drawing.Point(284, 115);
+            this.btnFillWithAncestors.Name = "btnFillWithAncestors";
+            this.btnFillWithAncestors.Size = new System.Drawing.Size(240, 23);
+            this.btnFillWithAncestors.TabIndex = 14;
+            this.btnFillWithAncestors.Text = "Fill with ancestor projects";
+            this.btnFillWithAncestors.UseVisualStyleBackColor = true;
+            this.btnFillWithAncestors.Click += new System.EventHandler(this.btnFillWithAncestors_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(206, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(113, 13);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Override Project GUID";
+            // 
+            // txtProjGuid
+            // 
+            this.txtProjGuid.Location = new System.Drawing.Point(206, 87);
+            this.txtProjGuid.Name = "txtProjGuid";
+            this.txtProjGuid.Size = new System.Drawing.Size(318, 20);
+            this.txtProjGuid.TabIndex = 12;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(206, 32);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Override Project Name";
+            // 
+            // txtProjName
+            // 
+            this.txtProjName.Location = new System.Drawing.Point(206, 48);
+            this.txtProjName.Name = "txtProjName";
+            this.txtProjName.Size = new System.Drawing.Size(318, 20);
+            this.txtProjName.TabIndex = 10;
+            // 
+            // btnRemoveFromAllSolns
+            // 
+            this.btnRemoveFromAllSolns.Location = new System.Drawing.Point(7, 358);
+            this.btnRemoveFromAllSolns.Name = "btnRemoveFromAllSolns";
+            this.btnRemoveFromAllSolns.Size = new System.Drawing.Size(193, 37);
+            this.btnRemoveFromAllSolns.TabIndex = 9;
+            this.btnRemoveFromAllSolns.Text = "Remove project from ALL Solutions";
+            this.btnRemoveFromAllSolns.UseVisualStyleBackColor = true;
+            this.btnRemoveFromAllSolns.Click += new System.EventHandler(this.btnRemoveFromAllSolns_Click);
+            // 
             // btnRemoveProjectFromSolns
             // 
-            this.btnRemoveProjectFromSolns.Location = new System.Drawing.Point(6, 296);
+            this.btnRemoveProjectFromSolns.Location = new System.Drawing.Point(6, 315);
             this.btnRemoveProjectFromSolns.Name = "btnRemoveProjectFromSolns";
-            this.btnRemoveProjectFromSolns.Size = new System.Drawing.Size(125, 36);
+            this.btnRemoveProjectFromSolns.Size = new System.Drawing.Size(195, 36);
             this.btnRemoveProjectFromSolns.TabIndex = 8;
             this.btnRemoveProjectFromSolns.Text = "Remove Project From My Solns";
             this.btnRemoveProjectFromSolns.UseVisualStyleBackColor = true;
@@ -317,9 +473,9 @@
             // 
             // btnFixDeadbeatSolutions
             // 
-            this.btnFixDeadbeatSolutions.Location = new System.Drawing.Point(7, 244);
+            this.btnFixDeadbeatSolutions.Location = new System.Drawing.Point(9, 192);
             this.btnFixDeadbeatSolutions.Name = "btnFixDeadbeatSolutions";
-            this.btnFixDeadbeatSolutions.Size = new System.Drawing.Size(124, 23);
+            this.btnFixDeadbeatSolutions.Size = new System.Drawing.Size(194, 23);
             this.btnFixDeadbeatSolutions.TabIndex = 7;
             this.btnFixDeadbeatSolutions.Text = "Fix Deadbeat Solutions";
             this.btnFixDeadbeatSolutions.UseVisualStyleBackColor = true;
@@ -327,69 +483,56 @@
             // 
             // btnDeadBeatSolns
             // 
-            this.btnDeadBeatSolns.Location = new System.Drawing.Point(6, 181);
+            this.btnDeadBeatSolns.Location = new System.Drawing.Point(7, 163);
             this.btnDeadBeatSolns.Name = "btnDeadBeatSolns";
-            this.btnDeadBeatSolns.Size = new System.Drawing.Size(124, 23);
+            this.btnDeadBeatSolns.Size = new System.Drawing.Size(194, 23);
             this.btnDeadBeatSolns.TabIndex = 6;
-            this.btnDeadBeatSolns.Text = "DeadBeat Solutions";
+            this.btnDeadBeatSolns.Text = "List DeadBeat Solutions";
             this.btnDeadBeatSolns.UseVisualStyleBackColor = true;
             this.btnDeadBeatSolns.Click += new System.EventHandler(this.btnDeadBeatSolns_Click);
             // 
-            // btnCleanReferences
+            // btnRemoveReferences
             // 
-            this.btnCleanReferences.Location = new System.Drawing.Point(7, 140);
-            this.btnCleanReferences.Name = "btnCleanReferences";
-            this.btnCleanReferences.Size = new System.Drawing.Size(124, 23);
-            this.btnCleanReferences.TabIndex = 5;
-            this.btnCleanReferences.Text = "Clean References";
-            this.btnCleanReferences.UseVisualStyleBackColor = true;
-            this.btnCleanReferences.Click += new System.EventHandler(this.btnCleanReferences_Click);
+            this.btnRemoveReferences.Location = new System.Drawing.Point(7, 100);
+            this.btnRemoveReferences.Name = "btnRemoveReferences";
+            this.btnRemoveReferences.Size = new System.Drawing.Size(194, 39);
+            this.btnRemoveReferences.TabIndex = 5;
+            this.btnRemoveReferences.Text = "Remove References from Projects";
+            this.btnRemoveReferences.UseVisualStyleBackColor = true;
+            this.btnRemoveReferences.Click += new System.EventHandler(this.btnRemoveReferences_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(380, 47);
+            this.label2.Location = new System.Drawing.Point(545, 32);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(42, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Results";
             // 
-            // txtResults
-            // 
-            this.txtResults.Location = new System.Drawing.Point(383, 72);
-            this.txtResults.Multiline = true;
-            this.txtResults.Name = "txtResults";
-            this.txtResults.ReadOnly = true;
-            this.txtResults.Size = new System.Drawing.Size(553, 583);
-            this.txtResults.TabIndex = 3;
-            // 
             // btnAddReference
             // 
-            this.btnAddReference.Location = new System.Drawing.Point(6, 76);
+            this.btnAddReference.Location = new System.Drawing.Point(6, 36);
             this.btnAddReference.Name = "btnAddReference";
-            this.btnAddReference.Size = new System.Drawing.Size(125, 23);
+            this.btnAddReference.Size = new System.Drawing.Size(195, 48);
             this.btnAddReference.TabIndex = 2;
-            this.btnAddReference.Text = "Add Reference to";
+            this.btnAddReference.Text = "(Re)Add  project reference to ancestors or those listed";
+            this.tooltipDeadbeats.SetToolTip(this.btnAddReference, "A deadbeat solution should reference a project, but doesn\'t");
             this.btnAddReference.UseVisualStyleBackColor = true;
             this.btnAddReference.Click += new System.EventHandler(this.btnAddReference_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(149, 47);
+            this.label1.Location = new System.Drawing.Point(206, 126);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Destination(s)";
             // 
-            // txtDestProjects
+            // tooltipDeadbeats
             // 
-            this.txtDestProjects.AcceptsTab = true;
-            this.txtDestProjects.Location = new System.Drawing.Point(147, 72);
-            this.txtDestProjects.Multiline = true;
-            this.txtDestProjects.Name = "txtDestProjects";
-            this.txtDestProjects.Size = new System.Drawing.Size(217, 583);
-            this.txtDestProjects.TabIndex = 0;
+            this.tooltipDeadbeats.ToolTipTitle = "Show this";
             // 
             // chkProjectTypes
             // 
@@ -400,22 +543,11 @@
             this.chkProjectTypes.TabIndex = 0;
             this.chkProjectTypes.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkProjectTypes_ItemCheck);
             // 
-            // btnRemoveFromAllSolns
-            // 
-            this.btnRemoveFromAllSolns.Location = new System.Drawing.Point(7, 339);
-            this.btnRemoveFromAllSolns.Name = "btnRemoveFromAllSolns";
-            this.btnRemoveFromAllSolns.Size = new System.Drawing.Size(123, 37);
-            this.btnRemoveFromAllSolns.TabIndex = 9;
-            this.btnRemoveFromAllSolns.Text = "Remove project from ALL Solutions";
-            this.btnRemoveFromAllSolns.UseVisualStyleBackColor = true;
-            this.btnRemoveFromAllSolns.Click += new System.EventHandler(this.btnRemoveFromAllSolns_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1037, 832);
-            this.Controls.Add(this.Button_FilterAssembly);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.ComboBox_FilterAssembly);
             this.Controls.Add(this.Button_SaveToCache);
@@ -428,6 +560,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -458,7 +591,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem howTheShitDoIUseThisThingToolStripMenuItem;
         private System.Windows.Forms.ComboBox ComboBox_FilterAssembly;
-        private System.Windows.Forms.Button Button_FilterAssembly;
 		private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel ToolStatusLabel_OutputStatus;
         private System.Windows.Forms.GroupBox grpProjectTypes;
@@ -472,14 +604,28 @@
         private System.Windows.Forms.TreeView TreeView_AssemblyInformationTree;
         private System.Windows.Forms.Button btnAddReference;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtDestProjects;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtResults;
-        private System.Windows.Forms.Button btnCleanReferences;
+        private System.Windows.Forms.Button btnRemoveReferences;
         private System.Windows.Forms.Button btnDeadBeatSolns;
         private System.Windows.Forms.Button btnFixDeadbeatSolutions;
         private System.Windows.Forms.Button btnRemoveProjectFromSolns;
         private System.Windows.Forms.Button btnRemoveFromAllSolns;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtProjName;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtProjGuid;
+        private System.Windows.Forms.Button btnFillWithAncestors;
+        private System.Windows.Forms.RichTextBox txtDestProjects;
+        private System.Windows.Forms.RichTextBox txtResults;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtFrameworkVersion;
+        private System.Windows.Forms.Label Version;
+        private System.Windows.Forms.TextBox txtPackageVersion;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtPackageId;
+        private System.Windows.Forms.Button btnAddPackage;
+        private System.Windows.Forms.ToolTip tooltipDeadbeats;
+        private System.Windows.Forms.Button txtMissing;
     }
 }
 

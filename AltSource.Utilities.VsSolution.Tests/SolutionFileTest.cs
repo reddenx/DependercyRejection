@@ -28,7 +28,7 @@ EndProject
 ";
 
             solnFile.InputText = origText;
-            var projFile = ProjectFile.Build(Guid.Parse(@"45e444ac-a513-40c5-9fd1-abbb9f265a05"));
+            var projFile = ProjectFile.Build(Guid.Parse(@"45e444ac-a513-40c5-9fd1-abbb9f265a05"), "CCI.Interfaces.Logging", ProjectTypeDict.Get(Guid.Parse("45e444ac-a513-40c5-9fd1-abbb9f265a05")));
 
             var removed = @"MinimumVisualStudioVersion = 10.0.40219.1
 Project(""{2150E333-8FDC-42A3-9474-1A3956D46DE8}"") = ""Solution Items"", ""Solution Items"", ""{BB52B956-AEF5-4EF3-8DE7-B15A4B2E7616}""

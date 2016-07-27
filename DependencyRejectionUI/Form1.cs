@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Security.AccessControl;
+using System.Xml.Linq;
 using AltSource.Utilities.VSSolution.Filters;
 
 namespace DependercyRejectionUI
@@ -116,24 +118,8 @@ namespace DependercyRejectionUI
 
         private void Button_LoadAssemblyInformation_Click(object sender, EventArgs e)
         {
-            if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem &&
-                ((ComboBoxItem) ComboBox_AssemblySelector.SelectedItem) != null)
-            {
-                BuildFilteredProjectTree(((ComboBoxItem) ComboBox_AssemblySelector.SelectedItem).Value,
-                    this._displayFilters);
-            }
+             BuildFilteredProjectTree(GetACtiveProjectFile(false),  this._displayFilters);
         }
-
-        private void Button_FilterAssembly_Click(object sender, EventArgs e)
-        {
-            if (ComboBox_AssemblySelector.SelectedItem is ComboBoxItem &&
-                ((ComboBoxItem) ComboBox_AssemblySelector.SelectedItem) != null)
-            {
-                BuildFilteredProjectTree(((ComboBoxItem) ComboBox_AssemblySelector.SelectedItem).Value,
-                    this._displayFilters);
-            }
-        }
-
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -151,14 +137,12 @@ namespace DependercyRejectionUI
 5) Watch and be amazed!", "How to use this shit");
         }
 
-
         private void SetAssemblyControls(bool enabled)
         {
             Button_SaveToCache.Enabled = enabled;
             ComboBox_AssemblySelector.Enabled = enabled;
             ComboBox_FilterAssembly.Enabled = enabled;
             Button_LoadAssemblyInformation.Enabled = enabled;
-            Button_FilterAssembly.Enabled = enabled;
             TreeView_AssemblyInformationTree.Enabled = enabled;
         }
 
@@ -171,7 +155,7 @@ namespace DependercyRejectionUI
                 {
                     return new ComboBoxItem()
                     {
-                        Text = project.AssemblyName,
+                        Text = ((project.Exists) ? string.Empty : "   ### (in sln but missing) - " ) +   project.AssemblyName,
                         Value = project
                     };
                 }).ToArray();
@@ -214,18 +198,7 @@ namespace DependercyRejectionUI
             TreeView_AssemblyInformationTree.Nodes.Add(solutionsNode);
 
         }
-
-        private class ComboBoxItem
-        {
-            public string Text { get; set; }
-            public ProjectFile Value { get; set; }
-
-            public override string ToString()
-            {
-                return Text;
-            }
-        }
-
+        
         private void LoadChkProjectTypes()
         {
             chkProjectTypes.Items.AddRange(
@@ -268,10 +241,10 @@ namespace DependercyRejectionUI
                 this._displayFilters.Add(filter);
             }
 
-            var assemblyToAnalyze = ComboBox_AssemblySelector.SelectedItem;
+            var assemblyToAnalyze = GetACtiveProjectFile(false);
             if (assemblyToAnalyze != null)
             {
-                BuildFilteredProjectTree(((ComboBoxItem) assemblyToAnalyze).Value, _displayFilters);
+                BuildFilteredProjectTree(assemblyToAnalyze, _displayFilters);
             }
         }
 
@@ -293,10 +266,10 @@ namespace DependercyRejectionUI
                 this._displayFilters.Add(filter);
             }
 
-            var assemblyToAnalyze = ComboBox_AssemblySelector.SelectedItem;
+            var assemblyToAnalyze = GetACtiveProjectFile(false);
             if (assemblyToAnalyze != null)
             {
-                BuildFilteredProjectTree(((ComboBoxItem) assemblyToAnalyze).Value, _displayFilters);
+                BuildFilteredProjectTree(assemblyToAnalyze, _displayFilters);
             }
         }
 
@@ -323,10 +296,10 @@ namespace DependercyRejectionUI
 
             _lastFilterProjectFile = newFilterProject.Value;
 
-            var assemblyToAnalyze = ComboBox_AssemblySelector.SelectedItem;
+            var assemblyToAnalyze = GetACtiveProjectFile(false);
             if (assemblyToAnalyze != null)
             {
-                BuildFilteredProjectTree(((ComboBoxItem) assemblyToAnalyze).Value, _displayFilters);
+                BuildFilteredProjectTree(assemblyToAnalyze, _displayFilters);
             }
         }
 
@@ -357,7 +330,7 @@ namespace DependercyRejectionUI
 
         private void btnExportCurrent_Click(object sender, EventArgs e)
         {
-            var currentlySelectedPRoject = ((ComboBoxItem) ComboBox_AssemblySelector.SelectedItem).Value;
+            var currentlySelectedPRoject = GetACtiveProjectFile(false);
 
             using (StreamWriter sw = new StreamWriter(@"D:\\projectsCurrent.csv", false))
             {
@@ -379,7 +352,6 @@ namespace DependercyRejectionUI
 
         private void btnAddReference_Click(object sender, EventArgs e)
         {
-            txtResults.Text = string.Empty;
             if (TextBox_DirectoryInputText.Text.ToLower().EndsWith("trunk"))
             {
                 var confirmResult = MessageBox.Show("You are about to update trunk! you sure?",
@@ -388,53 +360,47 @@ namespace DependercyRejectionUI
                 if (confirmResult == DialogResult.No)
                     return;
             }
-            if (null == ComboBox_AssemblySelector.SelectedItem)
+
+            var currentlySelectedProject = GetACtiveProjectFile(false);
+
+            if (null == currentlySelectedProject)
             {
                 txtResults.Text = "No source project selected";
                 return;
             }
 
-            var currentlySelectedProject = ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value;
-            
-            foreach (var projectName in txtDestProjects.Text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None))
+
+            IEnumerable<ProjectFile> projList = txtDestProjects.Text.Split(new string[] { "\r", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => DependencyGraph.FindFileByName(p));
+            WriteLog("Updating listed projects");
+
+
+            foreach (var projFile in projList)
             {
-                var projFile = DependencyGraph.FindFileByName(projectName);
                 if (null == projFile)
                 {
-                    txtResults.Text += "[Dependency Graph does not contain] " + projectName + Environment.NewLine;
+                    AppendLog("[Dependency Graph does not contain file] ");
                 }
                 else
                 {
-                    txtResults.Text += "[Found] " + projectName + Environment.NewLine;
+                    AppendLog("[Found] " + projFile.AssemblyName);
 
                     int removed = projFile.AddReference(currentlySelectedProject);
+                    if (removed < 0)
+                    {
+                        AppendLog("Project skipped.");
+                    }
 
-                    txtResults.Text += "[Removed] " + removed.ToString( ) + " existing references." + Environment.NewLine;
-                    txtResults.Text += "[Reference added] " + Environment.NewLine + Environment.NewLine;
+                    AppendLog("[Removed] " + removed.ToString( ) + " existing references.");
+                    AppendLog("[Reference added] ");
                 }
-            }
-        }
-
-        private void btnCleanReferences_Click(object sender, EventArgs e)
-        {
-
-            var currentlySelectedProject = ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value;
-            if (currentlySelectedProject.ReferencedByProjects.Count == 0)
-            {
-                txtResults.Text += currentlySelectedProject.AssemblyName + " is either not loaded or is unreferenced by any projects." + Environment.NewLine;
-            }
-
-            foreach (var referencedByProject in currentlySelectedProject.ReferencedByProjects)
-            {
-                referencedByProject.AddReference(currentlySelectedProject);
-                txtResults.Text += referencedByProject.AssemblyName + " cleaned." + Environment.NewLine;
             }
         }
 
         private void btnDeadBeatSolns_Click(object sender, EventArgs e)
         {
             txtResults.Text = string.Empty;
-            var currentlySelectedProject = ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value;
+            var currentlySelectedProject = GetACtiveProjectFile(true);
 
             foreach (var deadBeatSolutionFile in currentlySelectedProject.GetDeadBeatSolutionFiles())
             {
@@ -442,19 +408,10 @@ namespace DependercyRejectionUI
             }
         }
 
-        private void AppendLog(string text)
-        {
-            txtResults.Text += text + Environment.NewLine;
-        }
-        private void WriteLog(string text)
-        {
-            txtResults.Text = text + Environment.NewLine;
-        }
-
         private void btnFixDeadbeatSolutions_Click(object sender, EventArgs e)
         {
             txtResults.Text = string.Empty;
-            var currentlySelectedProject = ((ComboBoxItem)ComboBox_AssemblySelector.SelectedItem).Value;
+            var currentlySelectedProject = GetACtiveProjectFile(true);
 
             ProjectType defaultAddType = (currentlySelectedProject.ProjectType.ID == Guid.Empty) ? ProjectTypeDict.GetByName("c#") : currentlySelectedProject.ProjectType;
 
@@ -473,41 +430,160 @@ namespace DependercyRejectionUI
         
         private void btnRemoveProjectFromSolns_Click(object sender, EventArgs e)
         {
-            var selectedItem = ComboBox_AssemblySelector.SelectedItem;
-            if (null == selectedItem)
-            {
-                AppendLog("No project selected");
-            }
-            else
-            {
-                var currentlySelectedProject = ((ComboBoxItem)selectedItem).Value;
+            var currentlySelectedProject = GetACtiveProjectFile(true);
 
-                var removed = currentlySelectedProject.Emancipate();
-                foreach(var solutionFile in removed)
-                {
-                    AppendLog("Updated " + solutionFile.FilePath + " soution files.");
-                }
+            var removed = currentlySelectedProject.Emancipate();
+            foreach(var solutionFile in removed)
+            {
+                AppendLog("Updated " + solutionFile.FilePath + " soution files.");
             }
         }
 
         private void btnRemoveFromAllSolns_Click(object sender, EventArgs e)
         {
-            var selectedItem = ComboBox_AssemblySelector.SelectedItem;
-            if (null == selectedItem)
+            var currentlySelectedProject = GetACtiveProjectFile(true);
+                
+            var removed = currentlySelectedProject.Emancipate(DependencyGraph.SolutionFiles);
+
+            foreach (var solutionFile in removed)
             {
-                AppendLog("No project selected");
+                AppendLog("Updated " + solutionFile.FilePath + " soution files.");
+            }
+        }
+
+        private void btnRemoveReferences_Click(object sender, EventArgs e)
+        {
+            ProjectFile delProjFile = GetACtiveProjectFile(true);
+
+            if (null != DependencyGraph)
+            {
+                foreach ( var projFile in txtDestProjects.Text.Split(new string[] {"\r", "\n", "\t"}, StringSplitOptions.RemoveEmptyEntries).Select(pn => DependencyGraph.FindFileByName(pn)))
+                {
+                    if (null == projFile)
+                    {
+                        txtResults.Text += "[Dependency Graph does not contain project] "  + Environment.NewLine;
+                    }
+                    else
+                    {
+                        int removed = projFile.RemoveExistingProjectReferences(delProjFile);
+
+                        projFile.Xml.Save(projFile.FilePath, SaveOptions.OmitDuplicateNamespaces);
+
+                        txtResults.Text += "[Removed from] " + removed.ToString() + " existing references." +
+                                           Environment.NewLine;
+                    }
+                }
             }
             else
             {
-                var currentlySelectedProject = ((ComboBoxItem)selectedItem).Value;
-                var removed = currentlySelectedProject.Emancipate(DependencyGraph.SolutionFiles);
-
-                foreach (var solutionFile in removed)
-                {
-                    AppendLog("Updated " + solutionFile.FilePath + " soution files.");
-                }
-
+                WriteLog("Gotta load first");
             }
+        }
+
+        private void btnFillWithAncestors_Click(object sender, EventArgs e)
+        {
+            var currentlySelectedProject = GetACtiveProjectFile(false);
+
+            if (null == currentlySelectedProject)
+            {
+                txtResults.Text = "No source project selected";
+                return;
+            }
+
+            txtDestProjects.Text = string.Join(Environment.NewLine,currentlySelectedProject.GetAncestors().Select(p => p.AssemblyName));
+
+        }
+
+        private void btnAddPackage_Click(object sender, EventArgs e)
+        {
+            foreach (
+                var projFile in
+                    txtDestProjects.Text.Split(new string[] {"\r", "\n", "\t"}, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(pn => DependencyGraph.FindFileByName(pn)))
+            {
+                //projFile.Packages.Root.AddAfterSelf(
+                //    new XElement());
+            }
+        }
+
+        #region Helpers
+
+        private class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public ProjectFile Value { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+        private ProjectFile GetACtiveProjectFile(bool overrideWithManualProject)
+        {
+            ProjectFile rtnProj = null;
+            if (overrideWithManualProject && (txtProjGuid.Text.Length > 0 || txtProjName.Text.Length > 0))
+            {
+                Guid guid;
+                Guid.TryParse(txtProjGuid.Text, out guid);
+                rtnProj = ProjectFile.Build(guid, txtProjName.Text, ProjectTypeDict.GetByName("C#"));
+
+
+                //See if it is in Graph as a missing file in a solution 
+                rtnProj = DependencyGraph.ProjectFiles.Where(p => p == rtnProj).DefaultIfEmpty(rtnProj).First();
+            }
+            else
+            {
+                var selectedItem = ComboBox_AssemblySelector.SelectedItem as ComboBoxItem;
+                if (null != selectedItem)
+                {
+                    rtnProj = selectedItem.Value;
+                }
+            }
+
+            return rtnProj;
+        }
+
+
+        private void AppendLog(string text)
+        {
+            txtResults.Text += text + Environment.NewLine;
+        }
+        private void WriteLog(string text)
+        {
+            txtResults.Text = text + Environment.NewLine;
+        }
+        #endregion
+
+        private void txtMissing_Click(object sender, EventArgs e)
+        {
+            List<Tuple<SolutionFile, ProjectFile>> missTuples = new List<Tuple<SolutionFile, ProjectFile>>();
+            foreach (var solutionFile in DependencyGraph.SolutionFiles)
+            {
+                foreach (var projectFile in solutionFile.Projects)
+                {
+                    if (!projectFile.Exists)
+                    {
+                        missTuples.Add(new Tuple<SolutionFile, ProjectFile>(solutionFile, projectFile));
+                    }
+                }
+            }
+
+            WriteLog("Unique Projects\r\n---------------\r\n");
+            AppendLog(
+                string.Join("\r\n", missTuples.Select(t => string.Format("{0} {1}", t.Item2.AssemblyName, t.Item2.ProjectId)).Distinct().ToArray())
+                );
+            AppendLog("");
+            AppendLog(
+                string.Join(
+                    "\r\n===========================\r\n",
+                    missTuples.Select(t => string.Format("{0}\r\n{1} {2}", t.Item1.FileName, t.Item2.AssemblyName, t.Item2.ProjectId.ToString())).ToArray())
+                );
+            
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 
