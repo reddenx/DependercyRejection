@@ -19,6 +19,7 @@ namespace AltSource.Utilities.VSSolution
             try
             {
                 SafeLogRunner(string.Format("Gathering Projects From: {0}", devFolder));
+<<<<<<< HEAD:AltSource.Utilities.VSSolution/DependencyGraphFactory.cs
                 //Only want to traverse filesystem once
                 var filePaths = Directory.EnumerateFiles(devFolder, "*.*", SearchOption.AllDirectories ) //<--- .NET 4.5
                                             .Where(file => file.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) 
@@ -36,6 +37,21 @@ namespace AltSource.Utilities.VSSolution
                                     .Where(f => f.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
                                     .Select(solutionPath => SolutionFile.BuildFromFile(solutionPath, projects)).ToArray();
                 
+=======
+                var projectsFilePaths = Directory.GetFiles(devFolder, "*.csproj", SearchOption.AllDirectories);
+                SafeLogRunner(string.Format("Found: {0}", projectsFilePaths.Length));
+
+                SafeLogRunner(string.Format("Gathering Solutions From: {0}", devFolder));
+                var solutionFilePaths = Directory.GetFiles(devFolder, "*.sln", SearchOption.AllDirectories);
+                SafeLogRunner(string.Format("Found: {0}", solutionFilePaths.Length));
+
+                SafeLogRunner(string.Format("Constructing Data", projectsFilePaths.Count()));
+                var projects = projectsFilePaths.Select(projectPath => ProjectFile.Build(projectPath)).ToArray();
+                var solutions = solutionFilePaths.Select(solutionPath => SolutionFile.BuildFromFile(solutionPath, projects)).ToArray();
+
+                SafeLogRunner(string.Format("Building Dependency Graph, {0} operations expected", projects.Length * projects.Length * solutions.Length));
+
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b:AltSource.Utilities.VSSolution/DependencyGraphFactory.cs
                 foreach (var outerProject in projects)
                 {
                     foreach (var innerProject in projects)
@@ -48,8 +64,11 @@ namespace AltSource.Utilities.VSSolution
                     }
                 }
 
+<<<<<<< HEAD:AltSource.Utilities.VSSolution/DependencyGraphFactory.cs
                 projects.AddRange(solutions.SelectMany(s => s.Projects.Where(p => !p.Exists)).Distinct());
                 
+=======
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b:AltSource.Utilities.VSSolution/DependencyGraphFactory.cs
                 SafeLogRunner("Complete!");
                 return new DependencyGraph(projects, solutions);
             }

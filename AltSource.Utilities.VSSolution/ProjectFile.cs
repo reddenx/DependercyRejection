@@ -13,6 +13,7 @@ namespace AltSource.Utilities.VSSolution
     [Serializable]
     public class ProjectFile
     {
+<<<<<<< HEAD
         protected List<ProjectFile> _ancestors;
 
         protected bool _packagesLoaded;
@@ -32,6 +33,9 @@ namespace AltSource.Utilities.VSSolution
         }
 
         public bool Exists { get; protected set; }
+=======
+        protected List<ProjectFile> _ancestors; 
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
 
         public string FilePath { get; protected set; }
         public string AssemblyName { get; protected set; }
@@ -48,6 +52,10 @@ namespace AltSource.Utilities.VSSolution
         /// Microsoft project identifier
         /// </summary>
         public ProjectType ProjectType { get; protected set; }
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
 
         private ProjectFile(string filePath)
         {
@@ -55,7 +63,10 @@ namespace AltSource.Utilities.VSSolution
             ReferencedByProjects = new List<ProjectFile>();
             ReferencedBySolutions = new List<SolutionFile>();
             ReferencesProjects = new List<ProjectFile>();
+<<<<<<< HEAD
             ReferencesProjectIds = new List<Guid>(0);
+=======
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
         }
 
         public override string ToString()
@@ -63,19 +74,29 @@ namespace AltSource.Utilities.VSSolution
             return this.FilePath;
         }
 
+<<<<<<< HEAD
         public static ProjectFile Build(Guid projectId, string projAss, ProjectType type)
         {
             var projFIle =  new ProjectFile(string.Empty);
             projFIle.ProjectId = projectId;
             projFIle.AssemblyName = projAss;
             projFIle.ProjectType = type;
+=======
+        public static ProjectFile Build(Guid projectId)
+        {
+            var projFIle =  new ProjectFile(string.Empty);
+            projFIle.ProjectId = projectId;
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
             return projFIle;
         }
 
         public static ProjectFile Build(string path) 
         {
             var projectFile = new ProjectFile(path);
+<<<<<<< HEAD
             projectFile.Exists = true;
+=======
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
 
             projectFile.Xml = XDocument.Load(path);
 
@@ -139,11 +160,14 @@ namespace AltSource.Utilities.VSSolution
 
         public int AddReference(ProjectFile referencedProject)
         {
+<<<<<<< HEAD
             //can't reference self
             if (referencedProject.Equals(this))
             {
                 return -1;
             }
+=======
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
             try
             {
                 //update local XML file
@@ -158,7 +182,11 @@ namespace AltSource.Utilities.VSSolution
                     new XElement(ns + "Project", referencedProject.ProjectId.ToString("B")),
                     new XElement(ns + "Name", referencedProject.AssemblyName));
                 
+<<<<<<< HEAD
                 int removed = RemoveExistingProjectReferences(referencedProject);
+=======
+                int removed = RemoveExistingProjectReferences(referencedProject.ProjectId);
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
 
                 var itemGroup = GetProjectItemGroupElemment();
                 itemGroup.Add(newProjectElement);
@@ -194,7 +222,11 @@ namespace AltSource.Utilities.VSSolution
         /// <returns></returns>
         public IEnumerable<SolutionFile> WhosMyDaddys()
         {
+<<<<<<< HEAD
             return this.GetAncestors().Union(new ProjectFile[]{this}).SelectMany(p => p.ReferencedBySolutions).Distinct(new SolutionComparer());
+=======
+            return this.GetAncestors().SelectMany(p => p.ReferencedBySolutions).Distinct(new SolutionComparer());
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
         }
 
         public IEnumerable<ProjectFile> GetAncestors()
@@ -206,6 +238,7 @@ namespace AltSource.Utilities.VSSolution
         protected IEnumerable<ProjectFile> AddUniqueAncestors(IEnumerable<ProjectFile> inputProjects)
         {
             //Add unique files
+<<<<<<< HEAD
             inputProjects = inputProjects.Distinct(new ProjectComparer());
             _ancestors.AddRange(inputProjects.Where(i => i != this && !_ancestors.Any(a => a.ProjectId == i.ProjectId)));
 
@@ -219,6 +252,15 @@ namespace AltSource.Utilities.VSSolution
             if (referencingProjects.Count > 0)
             {   
                 AddUniqueAncestors(referencingProjects);
+=======
+            _ancestors.AddRange(inputProjects.Where(i => !_ancestors.Any(a => a.ProjectId == i.ProjectId)));
+
+            var referencingProjects = new List<ProjectFile>(inputProjects.SelectMany(proj => proj.ReferencedByProjects));
+
+            if (referencingProjects.Count > 0)
+            {   
+            AddUniqueAncestors(referencingProjects);
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
             }
 
             return _ancestors;
@@ -246,6 +288,7 @@ namespace AltSource.Utilities.VSSolution
             return cleaned;
         }
 
+<<<<<<< HEAD
         public int RemoveExistingProjectReferences(ProjectFile projectToRemove)
         {
             var proj = Xml.Descendants()
@@ -253,6 +296,14 @@ namespace AltSource.Utilities.VSSolution
                         (a.Descendants().Any(d => d.Name.LocalName == "Project" && d.Value.ToLower() == projectToRemove.ProjectId.ToString("B").ToLower() ) ||
                         a.Descendants().Any(d => d.Name.LocalName == "Name" && d.Value.ToLower() == projectToRemove.AssemblyName.ToLower()))
                         );
+=======
+
+        protected int RemoveExistingProjectReferences(Guid projectId)
+        {
+            var proj = Xml.Descendants()
+                .Where(a => a.Name.LocalName == "Project" && string.Compare(a.Value, projectId.ToString("B"), true) == 0 )
+                ;
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
             int ct = proj.Count();
 
             proj.Remove();
@@ -289,7 +340,10 @@ namespace AltSource.Utilities.VSSolution
         {
             return this.ProjectId.GetHashCode();
         }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 7fb18f8102a2bb61da75472e0dcb20b8d717895b
     }
 }
