@@ -1,0 +1,33 @@
+==============
+ = Features = 
+==============
+
+existing
+--------
+
+- loading projects
+  + load from directory
+  + load from blob
+  + using project references to build a graph
+- saving project graph
+  + as blob
+  + as csv
+- focusing UI tree based on input assembly
+- filters
+  + filtering a 'to' and 'from' assembly to filter relationships
+  + filtering based on known file types
+- solution modification
+  + removing a project from solutions (all or input)
+  + list 'deadbeat' solutions
+  + fix 'deadbeat' solusions
+  + list missing projects
+  + add project references to listed projects
+  + remove project references from listed projects
+  + add package to listed projects
+
+desired
+-------
+
+- link packages to a project given access to them to get dependencies once monster is split up
+- list projects with dependencies to configuration management at the top level application (to detect the assemblies that might have dependencies on top level application configuration)
+  + searching files from project for configuration manager and finding the values and locations for investigation

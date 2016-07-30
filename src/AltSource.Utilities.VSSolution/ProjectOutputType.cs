@@ -11,6 +11,7 @@ namespace AltSource.Utilities.VSSolution
         Library,
         Exe,
         Module,
-        WinExe
+        WinExe,
+        AppContainerExe
     }
 }
