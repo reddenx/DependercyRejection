@@ -19,7 +19,16 @@ namespace ConsoleApplication1
         public List<SolutionFile> ReferencedBySolutions;
         public Guid ProjectId; //guid identifier
 
+<<<<<<< HEAD
+        /// <summary>
+        /// Microsoft project identifier
+        /// </summary>
+        public Guid? ProjectType;
+
+        public ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds, Guid? projectType)
+=======
         private ProjectFile(string filePath, Guid projectId, string assemblyName, Guid[] referenceIds, string outputType)
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
         {
             FilePath = filePath;
             ProjectId = projectId;
@@ -28,7 +37,11 @@ namespace ConsoleApplication1
             ReferencedBySolutions = new List<SolutionFile>();
             ReferencesProjectIds = referenceIds.ToArray();
             ReferencesProjects = new List<ProjectFile>();
+<<<<<<< HEAD
+            ProjectType = projectType;
+=======
             OutputType = outputType;
+>>>>>>> 14361c9af4c0ed9484275ffdd4b3360419e9671e
         }
 
         public static ProjectFile BuildFromFile(string filePath)
